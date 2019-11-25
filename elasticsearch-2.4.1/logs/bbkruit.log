@@ -1,0 +1,18 @@
+[2019-11-20 09:55:17,689][INFO ][node                     ] [fs0] version[2.4.1], pid[32606], build[c67dc32/2016-09-27T18:57:55Z]
+[2019-11-20 09:55:17,706][INFO ][node                     ] [fs0] initializing ...
+[2019-11-20 09:55:19,064][INFO ][plugins                  ] [fs0] modules [lang-groovy, reindex, lang-expression], plugins [], sites []
+[2019-11-20 09:55:19,119][INFO ][env                      ] [fs0] using [1] data paths, mounts [[/home (/dev/sdb1)]], net usable_space [89.9gb], net total_space [1.7tb], spins? [possibly], types [ext4]
+[2019-11-20 09:55:19,119][INFO ][env                      ] [fs0] heap size [989.8mb], compressed ordinary object pointers [true]
+[2019-11-20 09:55:21,876][INFO ][node                     ] [fs0] initialized
+[2019-11-20 09:55:21,876][INFO ][node                     ] [fs0] starting ...
+[2019-11-20 09:55:22,045][INFO ][transport                ] [fs0] publish_address {130.37.199.7:9300}, bound_addresses {[::]:9300}
+[2019-11-20 09:55:22,050][INFO ][discovery                ] [fs0] bbkruit/z-JDC9XHR2aGd0fjtM9rHg
+[2019-11-20 09:55:25,093][INFO ][cluster.service          ] [fs0] new_master {fs0}{z-JDC9XHR2aGd0fjtM9rHg}{130.37.199.7}{130.37.199.7:9300}, reason: zen-disco-join(elected_as_master, [0] joins received)
+[2019-11-20 09:55:25,119][INFO ][http                     ] [fs0] publish_address {130.37.199.7:9200}, bound_addresses {[::]:9200}
+[2019-11-20 09:55:25,119][INFO ][node                     ] [fs0] started
+[2019-11-20 09:55:25,182][INFO ][gateway                  ] [fs0] recovered [1] indices into cluster_state
+[2019-11-20 09:55:26,873][INFO ][cluster.routing.allocation] [fs0] Cluster health status changed from [RED] to [YELLOW] (reason: [shards started [[cw12][2]] ...]).
+[2019-11-20 09:55:37,820][INFO ][node                     ] [fs0] stopping ...
+[2019-11-20 09:55:39,520][INFO ][node                     ] [fs0] stopped
+[2019-11-20 09:55:39,521][INFO ][node                     ] [fs0] closing ...
+[2019-11-20 09:55:39,528][INFO ][node                     ] [fs0] closed

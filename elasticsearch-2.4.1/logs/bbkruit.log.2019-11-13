@@ -1,0 +1,14 @@
+[2019-11-13 11:27:52,285][INFO ][node                     ] [node027] version[2.4.1], pid[32694], build[c67dc32/2016-09-27T18:57:55Z]
+[2019-11-13 11:27:52,287][INFO ][node                     ] [node027] initializing ...
+[2019-11-13 11:27:53,328][INFO ][plugins                  ] [node027] modules [lang-groovy, reindex, lang-expression], plugins [], sites []
+[2019-11-13 11:27:53,507][INFO ][env                      ] [node027] using [1] data paths, mounts [[/home (master.ib.cluster:/home)]], net usable_space [98.6gb], net total_space [1.7tb], spins? [possibly], types [nfs]
+[2019-11-13 11:27:53,507][INFO ][env                      ] [node027] heap size [989.8mb], compressed ordinary object pointers [true]
+[2019-11-13 11:27:55,996][INFO ][node                     ] [node027] initialized
+[2019-11-13 11:27:55,997][INFO ][node                     ] [node027] starting ...
+[2019-11-13 11:27:56,137][INFO ][transport                ] [node027] publish_address {10.141.0.27:9300}, bound_addresses {[::]:9300}
+[2019-11-13 11:27:56,146][INFO ][discovery                ] [node027] bbkruit/Mm0cGX2WT6y9peGWdD0RjA
+[2019-11-13 11:27:59,181][INFO ][cluster.service          ] [node027] new_master {node027}{Mm0cGX2WT6y9peGWdD0RjA}{10.141.0.27}{10.141.0.27:9300}, reason: zen-disco-join(elected_as_master, [0] joins received)
+[2019-11-13 11:27:59,202][INFO ][http                     ] [node027] publish_address {10.141.0.27:9200}, bound_addresses {[::]:9200}
+[2019-11-13 11:27:59,202][INFO ][node                     ] [node027] started
+[2019-11-13 11:27:59,236][INFO ][gateway                  ] [node027] recovered [1] indices into cluster_state
+[2019-11-13 11:28:01,043][INFO ][cluster.routing.allocation] [node027] Cluster health status changed from [RED] to [YELLOW] (reason: [shards started [[cw12][1]] ...]).

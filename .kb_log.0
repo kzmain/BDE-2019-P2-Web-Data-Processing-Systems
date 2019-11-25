@@ -1,0 +1,8 @@
+[0xa6b810222a800ced 2019-11-13 11:23:19] INFO  Server is launched at 0.0.0.0:9090
+[0x52fc284ffb5e4013 2019-11-13 11:23:25] INFO  Runtime query: 626.549210ms.
+[0x52fc284ffb5e4013 2019-11-13 11:23:25] INFO  Runtime total: 1042.890099ms.
+[0x52fc284ffb5e4013 2019-11-13 11:23:31] INFO  Runtime query: 5123.130463ms.
+[0x52fc284ffb5e4013 2019-11-13 11:23:31] INFO  Runtime total: 5719.527363ms.
+[0x52fc284ffb5e4013 2019-11-13 11:23:32] INFO  Runtime building hashtable = 0.133036 milliseconds
+[0x52fc284ffb5e4013 2019-11-13 11:23:33] INFO  Runtime query: 1611.137539ms.
+[0x52fc284ffb5e4013 2019-11-13 11:23:33] INFO  Runtime total: 2509.340630ms.
