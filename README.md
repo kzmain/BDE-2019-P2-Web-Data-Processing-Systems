@@ -152,4 +152,4 @@ You should always use the larger scratch disk on `/var/scratch/wdps19XX`.
 ## Should we detect entities in non-English text?
 
 No, you only have to detect entities in English text.
-### use command  to make start_*.sh work
+### use command `module load prun/default` to make start\_\*.sh work
