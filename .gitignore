@@ -2,3 +2,5 @@
 .kb_*
 **/._*
 .vscode
+__pycache__
+.DS_Store
