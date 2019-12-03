@@ -4,3 +4,6 @@
 .vscode
 __pycache__
 .DS_Store
+*.csv
+data/sample
+sample_predictions.tsv
