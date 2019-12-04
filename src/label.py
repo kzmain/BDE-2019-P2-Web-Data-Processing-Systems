@@ -15,7 +15,7 @@ GENERATION_METHODS = [
 ]
 
 def generate_labels(df):
-    df['labels'] = df['payload'].progress_apply(lambda x: list(generate_entities(x)))   
+    df['labels'] = df['payload'].progress_apply(lambda x: list(generate_entities(eval(x))))   
     
     return df[['key', 'labels']]
 

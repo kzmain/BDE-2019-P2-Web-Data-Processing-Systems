@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, Comment, Doctype, NavigableString
 import re 
 import os
 import sys 
@@ -12,23 +12,28 @@ TAGS_TO_REMOVE = [
     '[document]'
 ]
 
-def prepare_payload(key, payload):
+
+def prepare_payload(key, host, payload):
     soup = BeautifulSoup(payload, 'html5lib')
 
     dir_name = 'beautiful_soup/%s'%key 
     os.makedirs(dir_name, exist_ok=True)
 
-
     write_file('%s/0.raw.html'%dir_name, str(soup))
+
+    for entry in soup.findAll(text=lambda x:isinstance(x, Comment) or isinstance(x, Doctype)):
+        entry.extract()
     for tag in soup(TAGS_TO_REMOVE): tag.extract() # remove the tags that should be ignored
     write_file('%s/1.tags_removed.html'%dir_name, str(soup))
+    
+    lines = list(soup.get_text().split('\n'))
+    write_file('%s/2.raw_text.txt'%dir_name, "\n".join(lines))
 
-    text = soup.get_text().strip()
-    write_file('%s/2.raw_text.txt'%dir_name, text)
-    lines = text.split('\n') 
-    lines = filter(lambda x: x.strip() != "", lines)
-    text = ' '.join(lines)
+    lines = list(map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x), lines))
+    lines = list(filter(lambda x: x.strip() != "" and "." in x and x.strip().lower() != host.lower(), lines))
 
+    text = '\n'.join(lines)
     write_file('%s/3.final.txt'%dir_name, text)
+    #write_file('%s/3.final2.txt'%dir_name,)
 
-    return text
+    return lines

@@ -6,10 +6,12 @@ import csv
 
 from utils import get_arg, get_arg_from_options, print_usage_and_exit, parallelize_dataframe
 
-Hit = namedtuple('Hit', 'text label results')
+Hit = namedtuple('Hit', 'text results')
 Result = namedtuple('Result', 'score label id')
 
-def query(domain, text, label):
+THRESHOLD_SCORE = 6
+
+def query(domain, text):
     url = 'http://%s/freebase/label/_search' % domain
     response = requests.get(url, params={'q': text, 'size':1000})
 
@@ -24,11 +26,12 @@ def query(domain, text, label):
             if freebase_label.lower() == text.lower():
                 score *= 10
 
-            results.append(Result(score, freebase_label, freebase_id))
+            if score >= THRESHOLD_SCORE:
+                results.append(Result(score, freebase_label, freebase_id))
 
         results.sort(key=lambda x: -x.score)
     
-    return Hit(text, label, results)
+    return Hit(text, results)
 
 def main(domain, labelled_file, output_file):
     df = pd.read_csv(labelled_file)
@@ -39,14 +42,16 @@ def main(domain, labelled_file, output_file):
         out_csv = csv.writer(out)
         out_csv.writerow(['key', 'label', 'freebase_id'])
         for _, row in df.iterrows():
-            for text, label in row['labels']:
-                hit = query(domain, text, label)
-                
-                print(row['key'], text, label)
+            for text in row['labels']:
+                hit = query(domain, text)
+
+                # print(hit.results)
+                print(row['key'], text)
 
                 if len(hit.results) > 0:
-                    out_csv.writerow([row['key'], text, hit.results[0].id])
-                    tsv_out.write('%s\t%s\t%s\n'%(row['key'],text, hit.results[0].id))
+                    result = hit.results[0]
+                    out_csv.writerow([row['key'], text, result.id])
+                    tsv_out.write('%s\t%s\t%s\n'%(row['key'], text, result.id))
                     
 
 if __name__ == '__main__':

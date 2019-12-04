@@ -4,3 +4,5 @@ stanfordcorenlp
 numpy
 tqdm
 pandas
+pyspotlight
+validators

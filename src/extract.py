@@ -55,7 +55,7 @@ def get_all_records(warc_file):
         if record: yield record
 
 def preprocess_record(key, host, payload):
-    payload = prepare_payload(key, payload)
+    payload = prepare_payload(key, host, payload)
 
     return key, host, payload
 
@@ -64,12 +64,12 @@ def main(warc_file, output_file):
         out_csv = csv.writer(out)
         out_csv.writerow(['key', 'host', 'payload'])
         for key, host, payload in starmap(preprocess_record, get_all_records(warc_file)):
-            if len(payload) < 100: continue
             print(key)
+
             out_csv.writerow(
                 [key, host, payload]
             )
-
+        
             if SAMPLE_ONLY and key == 'clueweb12-0000tw-00-00092': return
 
 
