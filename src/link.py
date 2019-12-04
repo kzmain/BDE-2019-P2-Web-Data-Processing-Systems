@@ -9,12 +9,6 @@ from utils import get_arg, get_arg_from_options, print_usage_and_exit, paralleli
 Hit = namedtuple('Hit', 'text label results')
 Result = namedtuple('Result', 'score label id')
 
-INTERESTED_LABELS = [
-    'ORG',
-    'PERSON',
-    'GPE',
-]
-
 def query(domain, text, label):
     url = 'http://%s/freebase/label/_search' % domain
     response = requests.get(url, params={'q': text, 'size':1000})
@@ -46,10 +40,10 @@ def main(domain, labelled_file, output_file):
         out_csv.writerow(['key', 'label', 'freebase_id'])
         for _, row in df.iterrows():
             for text, label in row['labels']:
-                if label not in INTERESTED_LABELS: continue
-
                 hit = query(domain, text, label)
+                
                 print(row['key'], text, label)
+
                 if len(hit.results) > 0:
                     out_csv.writerow([row['key'], text, hit.results[0].id])
                     tsv_out.write('%s\t%s\t%s\n'%(row['key'],text, hit.results[0].id))

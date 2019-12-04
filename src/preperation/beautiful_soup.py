@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import re 
+import os
 import sys 
 from utils import write_file
 
@@ -7,24 +8,27 @@ TAGS_TO_REMOVE = [
     'head', 'title', 
     'footer', 'header', 
     'noscript', 'script', 
-    'style', 'aside'
+    'style', 'aside',
+    '[document]'
 ]
 
-def prepare_payload(payload):
-    soup = BeautifulSoup(payload, 'html.parser')
+def prepare_payload(key, payload):
+    soup = BeautifulSoup(payload, 'html5lib')
 
+    dir_name = 'beautiful_soup/%s'%key 
+    os.makedirs(dir_name, exist_ok=True)
+
+
+    write_file('%s/0.raw.html'%dir_name, str(soup))
     for tag in soup(TAGS_TO_REMOVE): tag.extract() # remove the tags that should be ignored
+    write_file('%s/1.tags_removed.html'%dir_name, str(soup))
 
     text = soup.get_text().strip()
-    text = re.sub(r'(\n\s*)+', '\n', text) # replace n newlines with just 1 newline
-
+    write_file('%s/2.raw_text.txt'%dir_name, text)
     lines = text.split('\n') 
-    lines = map(
-        lambda x: x + '.' if not x[-1] == '.' else x, # add a dot after each sentence
-            filter(lambda x: x != "", # filter out the empty strings
-                map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x).strip(), lines) # strip each sentence of white spaces and replace non ascii chars
-            )
-        )
+    lines = filter(lambda x: x.strip() != "", lines)
     text = ' '.join(lines)
+
+    write_file('%s/3.final.txt'%dir_name, text)
 
     return text

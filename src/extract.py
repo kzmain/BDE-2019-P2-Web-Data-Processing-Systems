@@ -12,6 +12,8 @@ PREPERATION_METHODS = [
     'beautiful_soup'
 ]
 
+SAMPLE_ONLY = True
+
 HEADER_ID = "WARC-TREC-ID"
 HEADER_URI = "WARC-Target-URI"
 
@@ -53,7 +55,7 @@ def get_all_records(warc_file):
         if record: yield record
 
 def preprocess_record(key, host, payload):
-    payload = prepare_payload(payload)
+    payload = prepare_payload(key, payload)
 
     return key, host, payload
 
@@ -67,6 +69,8 @@ def main(warc_file, output_file):
             out_csv.writerow(
                 [key, host, payload]
             )
+
+            if SAMPLE_ONLY and key == 'clueweb12-0000tw-00-00092': return
 
 
 if len(sys.argv) < 3:

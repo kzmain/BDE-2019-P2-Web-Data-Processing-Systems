@@ -5,6 +5,8 @@ tqdm.pandas()
 
 from utils import get_arg, get_arg_from_options, print_usage_and_exit, parallelize_dataframe
 
+SAMPLE_ONLY = True
+
 KEYNAME = "WARC-TREC-ID"
 
 GENERATION_METHODS = [
@@ -21,8 +23,13 @@ def generate_labels(df):
 def main(extraction_file, output_file):
     df = pd.read_csv(extraction_file)
 
-    df = parallelize_dataframe(df, generate_labels)
-    
+    if SAMPLE_ONLY:
+        df['warc_id'] = df['key'].apply(lambda x: int(x.split('-')[3])) #clueweb12-0000tw-00-00092    
+        df = df[df['warc_id'] <= 92]
+
+    #df = parallelize_dataframe(df, generate_labels)
+    df = generate_labels(df)
+
     df.to_csv(output_file, index=False)
 
 if __name__ == '__main__':

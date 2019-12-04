@@ -3,10 +3,15 @@ import pandas as pd
 from utils import get_arg, get_arg_from_options, print_usage_and_exit, parallelize_dataframe
 
 
-def trim_till_different(group, block_size=10):
+def trim_till_different(group, block_size=10, reverse=False):
     if len(group) < 2: return group
 
     print(group.iloc[0]['host'], end='', flush=True)
+
+    if reverse: group['payload'] = group['payload'].apply(lambda x: x[::-1])
+    if group.iloc[0]['host'] == 'blog.accountant.intuit.com':
+        print(group)
+
     trimTill = 0
     while True:
         lastChar = None
@@ -31,6 +36,7 @@ def trim_till_different(group, block_size=10):
         trimTill += block_size
 
     group['payload'] = group['payload'].str.slice(start=trimTill)
+    if reverse: group['payload'] = group['payload'].apply(lambda x: x[::-1])
 
     print(" ->",trimTill)
 
@@ -38,10 +44,22 @@ def trim_till_different(group, block_size=10):
 
 def main(extraction_file, output_file):
     df = pd.read_csv(extraction_file)
+    min_len = df['payload'].map(len).min()
+    df['first_chars'] = df['payload'].str.slice(0, min(min_len, 10))
 
-    df_grouped = df.groupby('host')
+    df_grouped = df.groupby(['host', 'first_chars'])
 
-    df_grouped = df_grouped.apply(lambda group: trim_till_different(trim_till_different(group), 1))
+    df_grouped = df_grouped.apply(
+        lambda group: 
+            trim_till_different(
+                trim_till_different(
+                    trim_till_different(trim_till_different(group), 1),
+                    reverse=True
+                ), 
+                1, 
+                reverse=True
+            )
+    )
     
     df_grouped.reset_index().to_csv(output_file, index=False)
 
