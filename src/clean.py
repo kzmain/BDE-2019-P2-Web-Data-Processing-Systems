@@ -41,7 +41,7 @@ def main(extraction_file, output_file):
 
     df_grouped = df.groupby('host')
 
-    df_grouped = df_grouped.apply(trim_till_different)
+    df_grouped = df_grouped.apply(lambda group: trim_till_different(trim_till_different(group), 1))
     
     df_grouped.reset_index().to_csv(output_file, index=False)
 

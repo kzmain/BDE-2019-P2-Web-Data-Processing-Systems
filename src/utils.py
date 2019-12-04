@@ -24,3 +24,8 @@ def parallelize_dataframe(df, func, n_cores=4):
     pool.close()
     pool.join()
     return df
+    
+
+def write_file(filename, text):
+    with open(filename, 'w') as f:
+        f.write(text)

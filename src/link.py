@@ -1,40 +1,59 @@
 import sys
 import pandas as pd
 import requests
+from collections import namedtuple
+import csv
 
 from utils import get_arg, get_arg_from_options, print_usage_and_exit, parallelize_dataframe
 
-def query(domain, query):
-    url = 'http://%s/freebase/label/_search' % domain
-    response = requests.get(url, params={'q': query, 'size':1000})
-    id_labels = {}
+Hit = namedtuple('Hit', 'text label results')
+Result = namedtuple('Result', 'score label id')
 
+INTERESTED_LABELS = [
+    'ORG',
+    'PERSON',
+    'GPE',
+]
+
+def query(domain, text, label):
+    url = 'http://%s/freebase/label/_search' % domain
+    response = requests.get(url, params={'q': text, 'size':1000})
+
+    results = []
     if response:
         response = response.json()
-
-        #print(response)
         for hit in response.get('hits', {}).get('hits', []):
             freebase_label = hit.get('_source', {}).get('label')
             freebase_id = hit.get('_source', {}).get('resource')
-            id_labels.setdefault(freebase_id, set()).add( freebase_label )
+            score = hit.get('_score', 0)
 
-    return id_labels
+            if freebase_label.lower() == text.lower():
+                score *= 10
+
+            results.append(Result(score, freebase_label, freebase_id))
+
+        results.sort(key=lambda x: -x.score)
+    
+    return Hit(text, label, results)
 
 def main(domain, labelled_file, output_file):
     df = pd.read_csv(labelled_file)
 
     df['labels'] = df['labels'].apply(lambda x: eval(x))
 
-    for _, row in df.iterrows():
-        for text, label in row['labels']:
-            print(text, label)
-            
-            response = query(domain, text)
+    with open(output_file, 'w') as out, open(output_file+'.tsv', 'w') as tsv_out:
+        out_csv = csv.writer(out)
+        out_csv.writerow(['key', 'label', 'freebase_id'])
+        for _, row in df.iterrows():
+            for text, label in row['labels']:
+                if label not in INTERESTED_LABELS: continue
 
-            if response:
-                return
-    
-    df.to_csv(output_file, index=False)
+                hit = query(domain, text, label)
+                print(row['key'], text, label)
+                if len(hit.results) > 0:
+                    out_csv.writerow([row['key'], text, hit.results[0].id])
+                    tsv_out.write('%s\t%s\t%s\n'%(row['key'],text, hit.results[0].id))
+                    
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
