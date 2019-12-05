@@ -1,8 +1,11 @@
 import sys
 import pandas as pd
 import numpy as np
+import spacy
 from multiprocessing import Pool
 import textdistance
+
+nlp = spacy.load("en_core_web_sm")
 
 def print_usage_and_exit(usage):
     print(usage)
@@ -32,7 +35,9 @@ def write_file(filename, text):
         f.write(text)
 
 def tokenize(a):
-    return a.split(' ') #TODO: use NLP?
+    for word in nlp(a):
+        yield word.text
+    #return a.split(' ') #TODO: use NLP?
 
 def levenshtein(a, b):
     return textdistance.levenshtein(a, b)
