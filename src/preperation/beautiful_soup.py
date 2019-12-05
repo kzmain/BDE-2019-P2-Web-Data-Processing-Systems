@@ -12,6 +12,10 @@ TAGS_TO_REMOVE = [
     '[document]'
 ]
 
+SETENCE_SIGNS = [
+    '.', '?', '!'
+]
+
 
 def prepare_payload(key, host, payload):
     soup = BeautifulSoup(payload, 'html5lib')

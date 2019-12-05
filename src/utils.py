@@ -2,6 +2,7 @@ import sys
 import pandas as pd
 import numpy as np
 from multiprocessing import Pool
+import textdistance
 
 def print_usage_and_exit(usage):
     print(usage)
@@ -29,3 +30,18 @@ def parallelize_dataframe(df, func, n_cores=4):
 def write_file(filename, text):
     with open(filename, 'w') as f:
         f.write(text)
+
+def tokenize(a):
+    return a.split(' ') #TODO: use NLP?
+
+def levenshtein(a, b):
+    return textdistance.levenshtein(a, b)
+
+def jaro_winkler(a, b):
+    return textdistance.jaro_winkler(a, b)
+
+def jaccard(a , b):
+    return textdistance.jaccard(tokenize(a) , tokenize(b))
+
+def sorensen_dice(a , b):
+    return textdistance.sorensen_dice(tokenize(a) , tokenize(b))

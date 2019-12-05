@@ -3,18 +3,6 @@ import sys
 import validators
 
 nlp = spacy.load("en_core_web_sm")
-stops = spacy.lang.en.stop_words.STOP_WORDS
-
-def normalize(text):
-    text = nlp(text)
-    lemmatized = list()
-    for word in text:
-        lemma = word.lemma_.strip()
-        if lemma:
-            if lemma not in stops:
-                lemmatized.append(lemma)
-    return " ".join(lemmatized)
-
 
 INTERESTED_LABELS = [
     'ORG',
@@ -34,13 +22,10 @@ def special_ratio(text: str):
 
 
 def generate_entities(payload):
-
     entries = set()
-
 
     for line in payload:
         for ent in nlp(str(line)).ents:
-
             text = str(ent)
             label = ent.label_
             ratio = special_ratio(text)

@@ -3,13 +3,12 @@ import pandas as pd
 import requests
 from collections import namedtuple
 import csv
+import textdistance
 
 from utils import get_arg, get_arg_from_options, print_usage_and_exit, parallelize_dataframe
 
 Hit = namedtuple('Hit', 'text results')
 Result = namedtuple('Result', 'score label id')
-
-THRESHOLD_SCORE = 6
 
 def query(domain, text):
     url = 'http://%s/freebase/label/_search' % domain
@@ -21,13 +20,9 @@ def query(domain, text):
         for hit in response.get('hits', {}).get('hits', []):
             freebase_label = hit.get('_source', {}).get('label')
             freebase_id = hit.get('_source', {}).get('resource')
-            score = hit.get('_score', 0)
-
-            if freebase_label.lower() == text.lower():
-                score *= 10
-
-            if score >= THRESHOLD_SCORE:
-                results.append(Result(score, freebase_label, freebase_id))
+            freebase_score = hit.get('_score', 0)
+            
+            results.append(Result(freebase_score, freebase_label, freebase_id))
 
         results.sort(key=lambda x: -x.score)
     
@@ -38,24 +33,20 @@ def main(domain, labelled_file, output_file):
 
     df['labels'] = df['labels'].apply(lambda x: eval(x))
 
-    with open(output_file, 'w') as out, open(output_file+'.tsv', 'w') as tsv_out:
+    with open(output_file, 'w') as out:
         out_csv = csv.writer(out)
-        out_csv.writerow(['key', 'label', 'freebase_id'])
+        out_csv.writerow(['key', 'text', 'label', 'score', 'freebase_id'])
         for _, row in df.iterrows():
             for text in row['labels']:
-                hit = query(domain, text)
-
-                # print(hit.results)
                 print(row['key'], text)
 
-                if len(hit.results) > 0:
-                    result = hit.results[0]
-                    out_csv.writerow([row['key'], text, result.id])
-                    tsv_out.write('%s\t%s\t%s\n'%(row['key'], text, result.id))
+                hit = query(domain, text)
+                for result in hit.results:
+                    out_csv.writerow([row['key'], text, result.label, result.score, result.id])
                     
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 4:
         print_usage_and_exit('Usage: python3 %s domain labelled_file output_file'%__file__)
 
     domain = get_arg(1)
