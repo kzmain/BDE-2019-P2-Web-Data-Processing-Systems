@@ -23,6 +23,9 @@ DISTANCE_ALGORITHMS = [
 DISTANCE_ALGORITHM = sorensen_dice
 SELECT_COUNT = 1
 
+# Process each group (grouped by key, text combination)
+    # if length < 1, do not consider group
+    # only consider SELECT_COUNT rows from group (default: 1 (considering only top record))
 def process_group(group, out):
     if len(group) < 1: return
     key = group.iloc[0]['key']
@@ -36,7 +39,10 @@ def process_group(group, out):
 
         if i >= SELECT_COUNT: break
     
-
+# Read and filter linked_file (output of link.py)
+    # filter for scores above threshold so only highly probable relevant links are considered
+    # calculate distance based on selected algorithm, default: sorensen_dice
+    # write each group to output_file as defined in process_group()
 def main(linked_file, output_file):
     df = pd.read_csv(linked_file)
     df = df[df['score'] > THRESHOLD_SCORE]
@@ -51,7 +57,8 @@ def main(linked_file, output_file):
     with open(output_file, 'w') as out:
         grouped.progress_apply(lambda group: process_group(group, out))
 
-                    
+# After running, if score is to be calculated (COMPUTER_SCORE = True (default: True))
+    # calculate score by running score.py by comparing output_file to sample.annotations.tsv (control file)                   
 def run():
     main(linked_file, output_file)
 

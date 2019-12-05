@@ -7,6 +7,7 @@ import textdistance
 
 nlp = spacy.load("en_core_web_sm")
 
+# Print usage of python file and exit with error code.
 def print_usage_and_exit(usage):
     print(usage)
     sys.exit(1)    
