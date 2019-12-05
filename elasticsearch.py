@@ -1,5 +1,8 @@
 import requests
 
+# Query elastic search for entity query
+    # used if all results stored by link.py and rank.py are too big since sample gets too big,
+    # for small sample: use link.py and rank.py to store entity results beforehand for faster processing
 def search(domain, query):
     url = 'http://%s/freebase/label/_search' % domain
     response = requests.get(url, params={'q': query, 'size':1000})

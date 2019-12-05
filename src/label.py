@@ -16,12 +16,16 @@ GENERATION_METHODS = [
     'stanford_nlp'
 ]
 
+# Generate labels for each line in the payload.
+    # Show progress in terminal by using .progess_apply
 def generate_labels(df):
     df['labels'] = df['payload'].progress_apply(lambda x: list(generate_entities(eval(x))))   
     
     return df[['key', 'labels']]
 
-
+# Read extraction_file with all extracted lines 
+    # label each entity of each line from extracted lines
+    # write resulted lables per WARD_ID to output_file
 def main(extraction_file, output_file):
     df = pd.read_csv(extraction_file)
 

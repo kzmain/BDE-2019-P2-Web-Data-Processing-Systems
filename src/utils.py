@@ -4,6 +4,7 @@ import numpy as np
 from multiprocessing import Pool
 import textdistance
 
+# Print usage of python file and exit with error code.
 def print_usage_and_exit(usage):
     print(usage)
     sys.exit(1)    
