@@ -17,15 +17,23 @@ SAMPLE_ONLY = True
 HEADER_ID = "WARC-TREC-ID"
 HEADER_URI = "WARC-Target-URI"
 
+# Parse WARC record to processable record for extraction
+    # parse headers,
+    # check if ID and URI present in headers[] array,
+    # check if real article (len > 100)
+    # return key (ID), parsed URI, payload (html)
 def parse_record(raw_record):
     payload_split = raw_record.split('\n\n')
 
     warc_header = payload_split[0] 
     headers = {}
+
+    # Parse WARC headers with values to only values
+    # WARC-Date: 2012-02-10T22:49:56Z
+    # headers[WARC-Date] = 2012-02-10T22:49:56Z
     for line in warc_header.splitlines():
         split = line.split(': ')
         headers[split[0]]  = ': '.join(split[1:])
-
     
     if HEADER_ID in headers and HEADER_URI in headers: 
         key = headers[HEADER_ID]
@@ -38,6 +46,7 @@ def parse_record(raw_record):
     else: 
         return None
 
+# Read Web ARChive (WARC) file
 def get_raw_records(warc_file):
     payload = ''
     with gzip.open(warc_file, "rt", errors="ignore") as stream: 
@@ -48,6 +57,7 @@ def get_raw_records(warc_file):
             else:
                 payload += line
 
+# For each WARC record in the Web ARChive: parse record
 def get_all_records(warc_file):
     for record in get_raw_records(warc_file):
         record = parse_record(record)

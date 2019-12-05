@@ -11,6 +11,7 @@ INTERESTED_LABELS = [
     'PRODUCT'
 ]
 
+# Calculate special characters (non-alphabet) to alphabet ratio
 def special_ratio(text: str):
     m = 0
     n = len(text)
@@ -24,9 +25,13 @@ def special_ratio(text: str):
             continue
 
         m += 1
-    return has_alpha, m / n 
+    return has_alpha, m / n # Return if text has alphabetical text and ratio as tuple
 
-
+# Generate entities, 
+    # filter interesting entity labels, 
+    # filter non-alphabetical, 
+    # filter if a valid domain name is present (reject if TRUE)
+    # filter ratio of special chars to normal of < 0.1
 def generate_entities(payload):
     entries = set()
 
