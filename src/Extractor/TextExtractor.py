@@ -19,12 +19,20 @@ class TextExtractor:
         '[document]'
     ]
 
+    SETENCE_SIGNS = [
+        '.', '?', '!'
+    ]
+
+    # Prepare payload by stripping crawled webpages:
+        # strip comments and doctype tags,
+        # strip undesired tags (TAGS_TO_REMOVE),
+        # strip lines that do no pass regex,
+        # strip empty words (no chars or space chars),
+        # strip sentence signs (SENTENCE_SIGNS),
+        # strip any mentions of host
     @staticmethod
     def __prepare_payload(key, host, payload):
         soup = BeautifulSoup(payload, 'html5lib')
-
-        dir_name = 'beautiful_soup/%s' % key
-        os.makedirs(dir_name, exist_ok=True)
 
         for entry in soup.findAll(text=lambda x: isinstance(x, Comment) or isinstance(x, Doctype)):
             entry.extract()
@@ -33,8 +41,10 @@ class TextExtractor:
 
         lines = list(soup.get_text().split('\n'))
         lines = list(map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x), lines))
-        lines = list(filter(lambda x: x.strip() != "" and "." in x and x.strip().lower() != host.lower(), lines))
+        lines = list(filter(lambda x: x.strip() != "" and any(map(lambda sign: sign in x, TextExtractor.SETENCE_SIGNS)) and x.strip().lower() != host.lower(), lines))
 
+
+        print("TextExtractor: ", key)
         return_t = lines
         return return_t
 

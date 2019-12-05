@@ -10,3 +10,4 @@ NLP_DEP = "dep"
 NLP_TAG = "tag"
 
 LINKER_ENTITY = "entites"
+FREEBASE_ID = "freebase_id"

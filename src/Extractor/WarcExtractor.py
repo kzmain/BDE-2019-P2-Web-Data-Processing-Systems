@@ -52,14 +52,17 @@ class WarcExtractor:
             if record:
                 print("WarcExtractor: ", record[0])
                 warc_df.loc[record[0]] = record
+
+                if WarcExtractor.SAMPLE_ONLY and record[0] == 'clueweb12-0000tw-00-00092': break
         return warc_df
 
     @staticmethod
     def extract(spark, warc_file, out_file=""):
         warc_df = WarcExtractor.__get_all_records(warc_file)
+        warc_df = spark.createDataFrame(warc_df)
+
         if out_file != "":
             Writer.excel_writer(out_file, warc_df)
-        warc_df = spark.createDataFrame(warc_df)
 
         return warc_df
 
