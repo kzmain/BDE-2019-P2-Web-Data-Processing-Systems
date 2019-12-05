@@ -17,9 +17,9 @@ idList.set()
 
 # facts = {}
 
-def tripleStore():
+def tripleStore(freebase_label, freebase_score, freebase_id, freebase_entity_type):
     for i in idList:
-        results = db.sparql("SELECT DISTINCT * WHERE { %s ?p ?o .} LIMIT 10"% freebase_label)
+        results = db.sparql("SELECT DISTINCT * WHERE { %s owl:sameas ?o .} LIMIT 100"% freebase_label)
         # TODO:parse trident response
         # TODO:add the count of facts to the dictionary facts[i]= number_of_facts
     # TODO: calculate a score based on freebase_score in relation to fact count
