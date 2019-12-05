@@ -14,11 +14,17 @@ INTERESTED_LABELS = [
 def special_ratio(text: str):
     m = 0
     n = len(text)
+    has_alpha = False
     for i in range(n):
         c = text[i]
-        if c == ' ' or c == '.' or c.isnumeric() or c.isalpha(): continue
+        if c == ' ' or c == '.': continue
+        if c.isnumeric(): continue
+        if c.isalpha():
+            has_alpha = True
+            continue
+
         m += 1
-    return m / n 
+    return has_alpha, m / n 
 
 
 def generate_entities(payload):
@@ -27,10 +33,12 @@ def generate_entities(payload):
     for line in payload:
         for ent in nlp(str(line)).ents:
             text = str(ent)
+            if(len(text) <= 1): continue
+
             label = ent.label_
-            ratio = special_ratio(text)
+            has_alpha, ratio = special_ratio(text)
             if label in INTERESTED_LABELS:
-                if not validators.domain(text.lower()) and "  " not in text and ratio < 0.1:
+                if has_alpha and (text[0].isalpha() or text[0].isnumeric()) and not validators.domain(text.lower()) and "  " not in text and ratio < 0.1:
                     entries.add(text)
 
     return list(entries)

@@ -1,5 +1,7 @@
 import sys
 import pandas as pd
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 from tqdm import tqdm
 tqdm.pandas()
 

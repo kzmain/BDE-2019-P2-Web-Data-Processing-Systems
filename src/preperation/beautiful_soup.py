@@ -34,7 +34,7 @@ def prepare_payload(key, host, payload):
     write_file('%s/2.raw_text.txt'%dir_name, "\n".join(lines))
 
     lines = list(map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x), lines))
-    lines = list(filter(lambda x: x.strip() != "" and "." in x and x.strip().lower() != host.lower(), lines))
+    lines = list(filter(lambda x: x.strip() != "" and any(map(lambda sign: sign in x, SETENCE_SIGNS)) and x.strip().lower() != host.lower(), lines))
 
     text = '\n'.join(lines)
     write_file('%s/3.final.txt'%dir_name, text)
