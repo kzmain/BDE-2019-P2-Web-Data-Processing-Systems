@@ -16,7 +16,13 @@ SETENCE_SIGNS = [
     '.', '?', '!'
 ]
 
-
+# Prepare payload by stripping crawled webpages:
+    # strip comments and doctype tags,
+    # strip undesired tags (TAGS_TO_REMOVE),
+    # strip lines that do no pass regex,
+    # strip empty words (no chars or space chars),
+    # strip sentence signs (SENTENCE_SIGNS),
+    # strip any mentions of host
 def prepare_payload(key, host, payload):
     soup = BeautifulSoup(payload, 'html5lib')
 
