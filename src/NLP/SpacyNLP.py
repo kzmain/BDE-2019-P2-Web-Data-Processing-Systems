@@ -41,31 +41,36 @@ class SpacyNLP:
 
     @staticmethod
     def __generate_entities(key, host, payload):
-        #print("SpacyNLP: %s"%key)
+        print("SpacyNLP: %s"%key)
+
         entries = []
-        for token in SpacyNLP.nlp(str(payload)):
-            if token.ent_type_ in SpacyNLP.INTERESTED_LABELS:
-                text = str(token)
-                has_alpha, ratio = SpacyNLP.__special_ratio(text)
-                if has_alpha and (text[0].isalpha() or text[0].isnumeric()) and not validators.domain(text.lower()) and "  " not in text and ratio < 0.1:
-                    entries.append([text, token.pos_, token.tag_, token.dep_])
+        for line in payload:
+            for ent in SpacyNLP.nlp(str(line)).ents:
+                if ent.label_ in SpacyNLP.INTERESTED_LABELS:
+                    text = str(ent)
+                    has_alpha, ratio = SpacyNLP.__special_ratio(text)
+                    if has_alpha and (text[0].isalpha() or text[0].isnumeric()) and not validators.domain(text.lower()) and "  " not in text and ratio < 0.1:
+                        if text not in entries: entries.append(text)
         return entries
 
     @staticmethod
     def extract(text_df, out_file=""):
-        sum_cols = udf(SpacyNLP.__generate_entities, ArrayType(ArrayType(StringType())))
+        sum_cols = udf(SpacyNLP.__generate_entities, ArrayType(StringType()))
 
-        text_df = text_df.withColumn(Columns.NLP_NLP, sum_cols(Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT))
-        text_df = text_df.withColumn(Columns.NLP_SIZE, size(col(Columns.NLP_NLP)))
-        text_df = text_df.filter(col(Columns.NLP_SIZE) >= 1)
-        text_df = text_df.withColumn(Columns.NLP_NLP, explode(Columns.NLP_NLP))
-        text_df = text_df.withColumn(Columns.NLP_MENTION, col(Columns.NLP_NLP).getItem(0))\
-            .withColumn(Columns.NLP_POS, col(Columns.NLP_NLP).getItem(1))\
-            .withColumn(Columns.NLP_TAG, col(Columns.NLP_NLP).getItem(2))\
-            .withColumn(Columns.NLP_DEP, col(Columns.NLP_NLP).getItem(3))
-        text_df = text_df.drop(col(Columns.NLP_NLP))
-        text_df = text_df.drop(col(Columns.NLP_SIZE))
+        text_df = text_df.withColumn(Columns.NLP_MENTION, sum_cols(Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT))
         text_df = text_df.drop(col(Columns.WARC_CONTENT))
+        text_df = text_df.drop(col(Columns.WARC_URL))
+
+        text_df = text_df.withColumn(Columns.NLP_SIZE, size(col(Columns.NLP_MENTION)))
+        text_df = text_df.filter(col(Columns.NLP_SIZE) >= 1)
+        text_df = text_df.withColumn(Columns.NLP_MENTION, explode(Columns.NLP_MENTION))
+        # text_df = text_df.withColumn(Columns.NLP_MENTION, col(Columns.NLP_NLP).getItem(0))#\
+            # .withColumn(Columns.NLP_POS, col(Columns.NLP_NLP).getItem(1))\
+            # .withColumn(Columns.NLP_TAG, col(Columns.NLP_NLP).getItem(2))\
+            # .withColumn(Columns.NLP_DEP, col(Columns.NLP_NLP).getItem(3))
+        # text_df = text_df.drop(col(Columns.NLP_NLP))
+        text_df = text_df.drop(col(Columns.NLP_SIZE))
+
         if out_file != "":
             Writer.excel_writer(out_file, text_df)
         return text_df

@@ -9,6 +9,7 @@ from pyspark.sql.functions import udf, lit, explode
 from pyspark.sql.types import StringType, ArrayType
 
 from System import Columns
+from Tools.Writer import Writer
 
 import http.client, urllib.parse
 import json
@@ -23,13 +24,13 @@ class Linker:
     nlp = spacy.load("en_core_web_sm")
 
     @staticmethod
-    def tokenize(a):
+    def __tokenize(a):
         for word in Linker.nlp(a):
             yield word.text
 
     @staticmethod
-    def sorensen_dice(a , b):
-        return textdistance.sorensen_dice(Linker.tokenize(a) , Linker.tokenize(b))
+    def __sorensen_dice(a , b):
+        return textdistance.sorensen_dice(Linker.__tokenize(a) , Linker.__tokenize(b))
 
     @staticmethod
     def query(domain, text):
@@ -47,19 +48,23 @@ class Linker:
                 freebase_score = hit.get('_score', 0)
                 
                 if freebase_score < Linker.THRESHOLD_SCORE: continue
-                results.append([freebase_score, Linker.sorensen_dice(text, freebase_label), freebase_label, freebase_id])
+                results.append([freebase_score, Linker.__sorensen_dice(text, freebase_label), freebase_label, freebase_id])
             
-            results.sort(key=lambda x: (-x[0], x[1]))
+            results.sort(key=lambda x: (x[1], -x[0]))
             results = list(map(lambda x: x[3], results[0:min(len(results), Linker.SELECT_COUNT)]))
 
         return results
 
     @staticmethod
-    def link(domain, nlp_df, output_file):
+    def link(domain, nlp_df, out_file=""):
         sum_cols = udf(Linker.query, ArrayType(StringType()))
         nlp_df = nlp_df.withColumn(Columns.LINKER_ENTITY, sum_cols(lit(domain), Columns.NLP_MENTION))
         nlp_df = nlp_df.withColumn(Columns.FREEBASE_ID, explode(Columns.LINKER_ENTITY))
         nlp_df = nlp_df.drop(Columns.LINKER_ENTITY)
+
+        if out_file != "":
+            Writer.excel_writer(out_file, nlp_df)
+
         return nlp_df
 
 # if __name__ == '__main__':
