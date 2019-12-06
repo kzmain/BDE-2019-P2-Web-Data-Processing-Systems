@@ -9,8 +9,11 @@ from bs4 import BeautifulSoup, Comment, Doctype
 from System import Columns
 from Tools.Writer import Writer
 
+import spacy
 
 class TextExtractor:
+    nlp = spacy.load("en_core_web_sm")
+
     TAGS_TO_REMOVE = [
         'head', 'title',
         'footer', 'header',
@@ -43,14 +46,20 @@ class TextExtractor:
         lines = list(map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x), lines))
         lines = list(filter(lambda x: x.strip() != "" and any(map(lambda sign: sign in x, TextExtractor.SETENCE_SIGNS)) and x.strip().lower() != host.lower(), lines))
 
-        return_t = lines
-        return return_t
+        print('TextExtractor: ', key, host)
+
+        sentences = []
+        for line in lines:
+            for sentence in TextExtractor.nlp(line).sents:
+                sentences.append(str(sentence))
+            
+        return sentences
 
     @staticmethod
     def extract(warc_df, out_file=""):
         sum_cols = udf(TextExtractor.__prepare_payload, ArrayType(StringType()))
         warc_df = warc_df.withColumn(Columns.WARC_CONTENT, sum_cols(Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT))
-        # warc_df = warc_df.withColumn(Columns.WARC_CONTENT, explode(Columns.WARC_CONTENT))
+        warc_df = warc_df.withColumn(Columns.WARC_CONTENT, explode(Columns.WARC_CONTENT))
         if out_file != "":
             Writer.excel_writer(out_file, warc_df)
         return warc_df

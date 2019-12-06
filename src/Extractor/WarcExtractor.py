@@ -11,6 +11,7 @@ from pyspark.rdd import RDD
 
 class WarcExtractor:
     SAMPLE_ONLY = True
+    SAMPLE_SIZE = 92
 
     SIZE_THRESHOLD = 100
 
@@ -37,12 +38,15 @@ class WarcExtractor:
                 key = headers[WarcExtractor.HEADER_ID]
                 uri = headers[WarcExtractor.HEADER_URI]
 
-                if WarcExtractor.SAMPLE_ONLY and int(key.split('-')[3]) > 92: return None
+                if WarcExtractor.SAMPLE_ONLY and int(key.split('-')[3]) > WarcExtractor.SAMPLE_SIZE: return None
 
                 payload = '\n\n'.join(payload_split[2:])  # Remove headers
 
                 if len(payload) >= WarcExtractor.SIZE_THRESHOLD: 
-                    return key, urlparse(uri).netloc, payload
+                    host = urlparse(uri).netloc
+                    print('WarcExtractor: ', key, host)
+
+                    return key, host, payload
         return None
 
     @staticmethod
