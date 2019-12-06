@@ -5,61 +5,60 @@ from urllib.parse import urlparse
 from System import Columns
 from Tools.Writer import Writer
 
+from pyspark import SparkContext
+from pyspark.rdd import RDD
+
 
 class WarcExtractor:
     SAMPLE_ONLY = True
 
+    SIZE_THRESHOLD = 100
+
+    FILE_DELIMETER = "WARC/1.0"
+
     HEADER_ID = "WARC-TREC-ID"
     HEADER_URI = "WARC-Target-URI"
 
-    columns = [Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT]
-
     @staticmethod
-    def __parse_record(raw_record):
+    def __parse_record(entry):
+        _, raw_record = entry
+
         payload_split = raw_record.split('\n\n')
-        warc_header = payload_split[0]
-        headers = {}
-        for line in warc_header.splitlines():
-            split = line.split(': ')
-            headers[split[0]] = ': '.join(split[1:])
 
-        if WarcExtractor.HEADER_ID in headers and WarcExtractor.HEADER_URI in headers:
-            key = headers[WarcExtractor.HEADER_ID]
-            uri = headers[WarcExtractor.HEADER_URI]
+        if len(payload_split) >= 3:
+            warc_header = payload_split[0]
+            headers = {}
 
-            payload = '\n\n'.join(payload_split[2:])  # Remove headers
-            if len(payload) < 100: return None  # Not a real article
-            return key, urlparse(uri).netloc, payload
-        else:
-            return None
+            for line in warc_header.splitlines():
+                split = line.split(': ')
+                headers[split[0]] = ': '.join(split[1:])
 
-    @staticmethod
-    def __get_raw_records(warc_file):
-        payload = ''
-        with gzip.open(warc_file, "rt", errors="ignore") as stream:
-            for line in stream:
-                if line.strip() == "WARC/1.0":
-                    yield payload
-                    payload = ''
-                else:
-                    payload += line
+            if WarcExtractor.HEADER_ID in headers and WarcExtractor.HEADER_URI in headers:
+                key = headers[WarcExtractor.HEADER_ID]
+                uri = headers[WarcExtractor.HEADER_URI]
+
+                if WarcExtractor.SAMPLE_ONLY and int(key.split('-')[3]) > 92: return None
+
+                payload = '\n\n'.join(payload_split[2:])  # Remove headers
+
+                if len(payload) >= WarcExtractor.SIZE_THRESHOLD: 
+                    return key, urlparse(uri).netloc, payload
+        return None
 
     @staticmethod
-    def __get_all_records(warc_file):
-        warc_df = pd.DataFrame(columns=WarcExtractor.columns)
-        for record in WarcExtractor.__get_raw_records(warc_file):
-            record = WarcExtractor.__parse_record(record)
-            if record:
-                print("WarcExtractor: ", record[0])
-                warc_df.loc[record[0]] = record
+    def extract(sc: SparkContext, warc_file, out_file=""):
+        file_reader = sc.newAPIHadoopFile(
+            warc_file,
+            'org.apache.hadoop.mapreduce.lib.input.TextInputFormat',
+            'org.apache.hadoop.io.LongWritable',
+            'org.apache.hadoop.io.Text',
+            conf={'textinputformat.record.delimiter': WarcExtractor.FILE_DELIMETER}
+        ) # type: RDD
 
-                if WarcExtractor.SAMPLE_ONLY and record[0] == 'clueweb12-0000tw-00-00092': break
-        return warc_df
-
-    @staticmethod
-    def extract(spark, warc_file, out_file=""):
-        warc_df = WarcExtractor.__get_all_records(warc_file)
-        warc_df = spark.createDataFrame(warc_df)
+        warc_df = file_reader \
+            .map(WarcExtractor.__parse_record) \
+            .filter(lambda x: x is not None) \
+            .toDF([Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT])
 
         if out_file != "":
             Writer.excel_writer(out_file, warc_df)

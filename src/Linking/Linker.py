@@ -4,7 +4,6 @@ import pandas as pd
 from collections import namedtuple
 import csv
 
-# from utils import get_arg, get_arg_from_options, print_usage_and_exit, parallelize_dataframe
 from pyspark.sql.functions import udf, lit, explode
 from pyspark.sql.types import StringType, ArrayType
 
@@ -66,13 +65,3 @@ class Linker:
             Writer.excel_writer(out_file, nlp_df)
 
         return nlp_df
-
-# if __name__ == '__main__':
-#     if len(sys.argv) < 2:
-#         print_usage_and_exit('Usage: python3 %s domain labelled_file output_file' % __file__)
-#
-#     domain = get_arg(1)
-#     labelled_file = get_arg(2)
-#     output_file = get_arg(3)
-#
-#     main(domain, labelled_file, output_file)

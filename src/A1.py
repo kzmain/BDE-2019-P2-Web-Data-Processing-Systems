@@ -14,17 +14,20 @@ from System import Columns
 #java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
 #os.environ['JAVA_HOME'] = java8_location
 
-TEST_SIGNAL = True
-
-spark = SparkSession \
+def create_spark_app():
+    return SparkSession \
             .builder \
             .appName("A1") \
             .getOrCreate()
 
-warc_df = WarcExtractor.extract(spark, "../data/sample.warc.gz", 'raw.csv')
-text_df = TextExtractor.extract(warc_df, 'extracted.csv')
-nlp_df = SpacyNLP.extract(text_df, 'labelled.csv')
-link_df = Linker.link("localhost:9200", nlp_df, 'linked.csv')
+app = create_spark_app()
+sc = app.sparkContext
+
+
+warc_df = WarcExtractor.extract(sc, "../data/sample.warc.gz")
+text_df = TextExtractor.extract(warc_df)
+nlp_df = SpacyNLP.extract(text_df)
+link_df = Linker.link("localhost:9200", nlp_df)
 
 df = link_df.toPandas()
 df.to_csv('out.csv', index=False)
