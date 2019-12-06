@@ -24,12 +24,12 @@ class TextExtractor:
     ]
 
     # Prepare payload by stripping crawled webpages:
-        # strip comments and doctype tags,
-        # strip undesired tags (TAGS_TO_REMOVE),
-        # strip lines that do no pass regex,
-        # strip empty words (no chars or space chars),
-        # strip sentence signs (SENTENCE_SIGNS),
-        # strip any mentions of host
+    # strip comments and doctype tags,
+    # strip undesired tags (TAGS_TO_REMOVE),
+    # strip lines that do no pass regex,
+    # strip empty words (no chars or space chars),
+    # strip sentence signs (SENTENCE_SIGNS),
+    # strip any mentions of host
     @staticmethod
     def __prepare_payload(key, host, payload):
         soup = BeautifulSoup(payload, 'html5lib')
@@ -41,7 +41,8 @@ class TextExtractor:
 
         lines = list(soup.get_text().split('\n'))
         lines = list(map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x), lines))
-        lines = list(filter(lambda x: x.strip() != "" and any(map(lambda sign: sign in x, TextExtractor.SETENCE_SIGNS)) and x.strip().lower() != host.lower(), lines))
+        lines = list(filter(lambda x: x.strip() != "" and any(
+            map(lambda sign: sign in x, TextExtractor.SETENCE_SIGNS)) and x.strip().lower() != host.lower(), lines))
 
         print("TextExtractor: ", key)
 
@@ -51,8 +52,9 @@ class TextExtractor:
     @staticmethod
     def extract(warc_df, out_file=""):
         sum_cols = udf(TextExtractor.__prepare_payload, ArrayType(StringType()))
-        warc_df = warc_df.withColumn(Columns.WARC_CONTENT, sum_cols(Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT))
-        # warc_df = warc_df.withColumn(Columns.WARC_CONTENT, explode(Columns.WARC_CONTENT))
+        warc_df = warc_df.withColumn(Columns.WARC_CONTENT,
+                                     sum_cols(Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT))
+        warc_df = warc_df.withColumn(Columns.WARC_CONTENT, explode(Columns.WARC_CONTENT))
         if out_file != "":
             Writer.excel_writer(out_file, warc_df)
         return warc_df
