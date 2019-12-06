@@ -9,3 +9,5 @@ validators
 textdistance
 pyspark
 xlsxwriter
+beautifulsoup4
+html5lib
