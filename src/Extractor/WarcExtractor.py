@@ -11,7 +11,7 @@ from pyspark.rdd import RDD
 
 class WarcExtractor:
     SAMPLE_ONLY = True
-    SAMPLE_SIZE = 10
+    SAMPLE_SIZE = 92
 
     SIZE_THRESHOLD = 100
 

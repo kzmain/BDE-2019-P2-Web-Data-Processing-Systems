@@ -22,7 +22,7 @@ import spacy
 
 
 class Linker:
-    THRESHOLD_SCORE = 4
+    THRESHOLD_SCORE = 6
     THRESHOLD_SCORE_H = 0.65
     df_columns = [Columns.LINKER_ENTITY,
                   Columns.LINKER_SCORE,
@@ -82,7 +82,7 @@ class Linker:
 
                 if freebase_score < Linker.THRESHOLD_SCORE: continue
                 dice_score = Linker.__sorensen_dice(query, freebase_label)
-                if dice_score > Linker.THRESHOLD_SCORE_H: continue
+                # if dice_score > Linker.THRESHOLD_SCORE_H: continue
 
                 results.append([query, freebase_score, dice_score, freebase_label, freebase_id])
             if len(results) > 0:
@@ -102,6 +102,7 @@ class Linker:
 
     @staticmethod
     def link(elastic_domain, trident_domain, spark, nlp_df, out_file=""):
+        test_df = nlp_df.toPandas()
         # Get distinction mentions list from nlp
         mention_list = nlp_df.select(Columns.NLP_MENTION).distinct().toPandas()[Columns.NLP_MENTION]
         mention_list = list(mention_list)
@@ -142,16 +143,15 @@ class Linker:
         # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.8787365|0.6666666666666666|   Flip4Mac WMV| /m/0bf90p|
         # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.7670817|0.6666666666666666|   Flip4Mac WMV| /m/0bf90p|
         # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac| 7.022306|               1.0|       Flip4Mac| /m/0bf90p|
-
-        nlp_df = nlp_df.join(freebase_df, nlp_df.labels == freebase_df.entites, how='full')
+        nlp_df = nlp_df.join(freebase_df, nlp_df.mention == freebase_df.entites, how='full')
         nlp_df = nlp_df.filter(nlp_df.entites.isNotNull())
         score_df = nlp_df.groupBy(col(Columns.NLP_MENTION).alias("n_mention")).agg(min(Columns.LINKER_H_SCORE).alias("h_max"))
-        nlp_df = nlp_df.join(score_df, (nlp_df.labels == score_df.n_mention), how='full')
+        nlp_df = nlp_df.join(score_df, (nlp_df.mention == score_df.n_mention), how='full')
         nlp_df = nlp_df.withColumn("h_checker", col("hamming_core") == col("h_max"))
         nlp_df = nlp_df.filter(col("h_checker"))
 
-        score_df = nlp_df.groupBy(col(Columns.NLP_MENTION).alias("x_mention")).agg(max(Columns.LINKER_SCORE).alias("s_max"))
-        nlp_df = nlp_df.join(score_df, (nlp_df.labels == score_df.x_mention), how='full')
+        score_df = nlp_df.groupBy(col(Columns.NLP_MENTION).alias("x_mention")).agg(min(Columns.LINKER_SCORE).alias("s_max"))
+        nlp_df = nlp_df.join(score_df, (nlp_df.mention == score_df.x_mention), how='full')
         nlp_df = nlp_df.withColumn("s_checker", col("score") == col("s_max"))
         nlp_df = nlp_df.filter(col("s_checker"))
 
