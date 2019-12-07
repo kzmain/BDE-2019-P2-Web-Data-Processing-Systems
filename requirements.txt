@@ -11,3 +11,5 @@ pyspark
 xlsxwriter
 beautifulsoup4
 html5lib
+fastparquet
+snappy

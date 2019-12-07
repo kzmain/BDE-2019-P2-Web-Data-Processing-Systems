@@ -9,3 +9,4 @@ data/sample
 sample_predictions.tsv
 testing
 src/beautiful_soup
+data/FREEBASE

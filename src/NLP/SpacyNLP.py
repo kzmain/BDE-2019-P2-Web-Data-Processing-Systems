@@ -125,7 +125,7 @@ class SpacyNLP:
         text_df = text_df.drop(col(Col.NLP_SIZE))        
         
         # NOTE: Readded this to check F score without new Linker implementation (otherwise no duplicate filtering occured)
-        text_df = text_df.dropDuplicates([Col.WARC_ID, Col.NLP_MENTION])
+        # text_df = text_df.dropDuplicates([Col.WARC_ID, Col.NLP_MENTION])
 
         if out_file != "":
             Writer.csv_writer(out_file, text_df)
