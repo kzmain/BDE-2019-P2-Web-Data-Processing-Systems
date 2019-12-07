@@ -65,7 +65,7 @@ class WarcExtractor:
             .toDF([Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT])
 
         if out_file != "":
-            Writer.excel_writer(out_file, warc_df)
+            Writer.csv_writer(out_file, warc_df)
 
         return warc_df
 

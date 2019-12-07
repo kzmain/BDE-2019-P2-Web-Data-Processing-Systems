@@ -32,14 +32,15 @@ class Linker:
         return textdistance.sorensen_dice(Linker.__tokenize(a) , Linker.__tokenize(b))
 
     @staticmethod
-    def query(domain, text):
+    def query(domain, key, text):
         
         conn = http.client.HTTPConnection(domain.split(':')[0], int(domain.split(':')[1]))
         conn.request('GET', '/freebase/label/_search?%s'%urllib.parse.urlencode({'q': text, 'size': 1000}))
         response = conn.getresponse()
-
+        
         results = []
         if response.status == 200:
+            print("Linker: ", key, text)
             response = json.loads(response.read())
             for hit in response.get('hits', {}).get('hits', []):
                 freebase_label = hit.get('_source', {}).get('label')
@@ -57,11 +58,11 @@ class Linker:
     @staticmethod
     def link(domain, nlp_df, out_file=""):
         sum_cols = udf(Linker.query, ArrayType(StringType()))
-        nlp_df = nlp_df.withColumn(Columns.LINKER_ENTITY, sum_cols(lit(domain), Columns.NLP_MENTION))
+        nlp_df = nlp_df.withColumn(Columns.LINKER_ENTITY, sum_cols(lit(domain), Columns.WARC_ID, Columns.NLP_MENTION))
         nlp_df = nlp_df.withColumn(Columns.FREEBASE_ID, explode(Columns.LINKER_ENTITY))
         nlp_df = nlp_df.drop(Columns.LINKER_ENTITY)
 
         if out_file != "":
-            Writer.excel_writer(out_file, nlp_df)
+            Writer.csv_writer(out_file, nlp_df)
 
         return nlp_df
