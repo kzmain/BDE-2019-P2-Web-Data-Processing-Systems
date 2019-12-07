@@ -8,8 +8,8 @@ from Linking.Linker import Linker
 from NLP.SpacyNLP import SpacyNLP
 from System import Columns
 
-# java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
-# os.environ['JAVA_HOME'] = java8_location
+java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
+os.environ['JAVA_HOME'] = java8_location
 
 TEST_SIGNAL = True
 
@@ -19,7 +19,7 @@ warc_df = WarcExtractor.extract(spark, "../data/sample.warc.gz", 'raw.csv')
 text_df = TextExtractor.extract(warc_df, 'extracted.csv')
 nlp_df = SpacyNLP.extract(text_df, 'labelled.csv')
 
-link_df = Linker.link("localhost:9200", nlp_df, 'linked.csv')
+link_df = Linker.link("localhost:9200", "localhost:9090", spark, nlp_df)
 
 df = link_df.toPandas()
 df.to_csv('out.csv', index=False)

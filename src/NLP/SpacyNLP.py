@@ -119,7 +119,7 @@ class SpacyNLP:
         text_df = text_df.drop(col(Col.NLP_NLP))
         text_df = text_df.drop(col(Col.NLP_SIZE))
         if out_file != "":
-            Writer.excel_writer(out_file, text_df)
+            Writer.csv_writer(out_file, text_df)
         return text_df
 
     # @staticmethod

@@ -62,7 +62,7 @@ class WarcExtractor:
         warc_df = spark.createDataFrame(warc_df)
 
         if out_file != "":
-            Writer.excel_writer(out_file, warc_df)
+            Writer.csv_writer(out_file, warc_df)
 
         return warc_df
 

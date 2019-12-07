@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="e9bf918d-1e06-4da4-b7db-8bd65d6eb1b3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/A1.py" beforeDir="false" afterPath="$PROJECT_DIR$/A1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Extractor/TextExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Extractor/TextExtractor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NLP/SpacyNLP.py" beforeDir="false" afterPath="$PROJECT_DIR$/NLP/SpacyNLP.py" afterDir="false" />
+=======
+    <list default="true" id="3e22d417-34cd-4a91-849d-e2bc2f4ad4f5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/A1.py" beforeDir="false" afterPath="$PROJECT_DIR$/A1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Linking/Linker.py" beforeDir="false" afterPath="$PROJECT_DIR$/Linking/Linker.py" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,16 +19,27 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
+<<<<<<< Updated upstream
     <SUITE FILE_PATH="coverage/src$A1.coverage" NAME="A1 Coverage Results" MODIFIED="1575649481068" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/src$SpacyNLP.coverage" NAME="SpacyNLP Coverage Results" MODIFIED="1575649160135" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NLP" />
+=======
+    <SUITE FILE_PATH="coverage/src$A1.coverage" NAME="A1 Coverage Results" MODIFIED="1575690881579" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+>>>>>>> Stashed changes
   </component>
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="false">
+<<<<<<< Updated upstream
         <entry file="file://$PROJECT_DIR$/Extractor/TextExtractor.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="412">
               <caret line="57" column="26" selection-start-line="57" selection-start-column="26" selection-end-line="57" selection-end-column="26" />
+=======
+        <entry file="file://$PROJECT_DIR$/A1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="345">
+              <caret line="23" column="26" lean-forward="true" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
+>>>>>>> Stashed changes
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -31,6 +48,7 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+<<<<<<< Updated upstream
         <entry file="file://$PROJECT_DIR$/Extractor/WarcExtractor.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-314">
@@ -85,14 +103,29 @@
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
+=======
+        <entry file="file://$PROJECT_DIR$/results.tsv">
+          <provider selected="true" editor-type-id="csv-text-editor">
+            <state relative-caret-position="-4179">
+              <caret line="6" column="29" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="29" />
+            </state>
+          </provider>
+          <provider editor-type-id="csv-table-editor">
+            <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
+>>>>>>> Stashed changes
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Linking/Linker.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
             <state relative-caret-position="-82">
               <caret line="38" selection-start-line="38" selection-end-line="38" />
+=======
+            <state relative-caret-position="285">
+              <caret line="19" column="25" selection-start-line="19" selection-start-column="25" selection-end-line="19" selection-end-column="25" />
+>>>>>>> Stashed changes
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -104,9 +137,15 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
+<<<<<<< Updated upstream
       <find>__generate_entities</find>
       <find>host</find>
       <find>'CARDINAL'</find>
+=======
+      <find>Barack Obama</find>
+      <find>Walt Disney Worl</find>
+      <find>CBS News</find>
+>>>>>>> Stashed changes
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -115,16 +154,27 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+<<<<<<< Updated upstream
         <option value="$PROJECT_DIR$/Extractor/TextExtractor.py" />
         <option value="$PROJECT_DIR$/NLP/SpacyNLP.py" />
         <option value="$PROJECT_DIR$/A1.py" />
+=======
+        <option value="$PROJECT_DIR$/A1.py" />
+        <option value="$PROJECT_DIR$/Linking/Linker.py" />
+>>>>>>> Stashed changes
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
+<<<<<<< Updated upstream
     <option name="x" value="71" />
     <option name="y" value="61" />
     <option name="width" value="1920" />
+=======
+    <option name="x" value="-27" />
+    <option name="y" value="23" />
+    <option name="width" value="1781" />
+>>>>>>> Stashed changes
     <option name="height" value="993" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -144,13 +194,30 @@
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+<<<<<<< Updated upstream
               <item name="Extractor" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="Linking" type="462c0819:PsiDirectoryNode" />
+>>>>>>> Stashed changes
             </path>
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="NLP" type="462c0819:PsiDirectoryNode" />
             </path>
+<<<<<<< Updated upstream
+=======
+            <path>
+              <item name="src" type="b2602c69:ProjectViewProjectNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="System" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="src" type="b2602c69:ProjectViewProjectNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Tools" type="462c0819:PsiDirectoryNode" />
+            </path>
+>>>>>>> Stashed changes
           </expand>
           <select />
         </subPane>
@@ -160,8 +227,11 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+<<<<<<< Updated upstream
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+=======
+>>>>>>> Stashed changes
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
@@ -176,7 +246,11 @@
       </list>
     </option>
   </component>
+<<<<<<< Updated upstream
   <component name="RunManager" selected="Python.A1">
+=======
+  <component name="RunManager">
+>>>>>>> Stashed changes
     <configuration name="A1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="src" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -199,6 +273,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+<<<<<<< Updated upstream
     <configuration name="SpacyNLP" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="src" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -225,6 +300,11 @@
       <list>
         <item itemvalue="Python.A1" />
         <item itemvalue="Python.SpacyNLP" />
+=======
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.A1" />
+>>>>>>> Stashed changes
       </list>
     </recent_temporary>
   </component>
@@ -233,16 +313,26 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+<<<<<<< Updated upstream
       <changelist id="e9bf918d-1e06-4da4-b7db-8bd65d6eb1b3" name="Default Changelist" comment="" />
       <created>1575641546209</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1575641546209</updated>
       <workItem from="1575641547599" duration="5372000" />
+=======
+      <changelist id="3e22d417-34cd-4a91-849d-e2bc2f4ad4f5" name="Default Changelist" comment="" />
+      <created>1575690743796</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1575690743796</updated>
+      <workItem from="1575690744975" duration="3458000" />
+>>>>>>> Stashed changes
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< Updated upstream
     <option name="totallyTimeSpent" value="5372000" />
   </component>
   <component name="ToolWindowManager">
@@ -251,6 +341,16 @@
     <layout>
       <window_info id="Favorites" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21778488" />
+=======
+    <option name="totallyTimeSpent" value="3458000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-27" y="23" width="1781" height="993" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26969522" />
+>>>>>>> Stashed changes
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" />
@@ -259,6 +359,7 @@
       <window_info anchor="bottom" id="Terminal" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
+<<<<<<< Updated upstream
       <window_info anchor="bottom" id="Find" order="1" weight="0.32963374" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32963374" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3529412" />
@@ -266,6 +367,15 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="SciView" visible="true" weight="0.29179978" />
+=======
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.31853497" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="SciView" />
+>>>>>>> Stashed changes
       <window_info anchor="right" id="Database" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -275,6 +385,7 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+<<<<<<< Updated upstream
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -334,12 +445,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="412">
           <caret line="57" column="26" selection-start-line="57" selection-start-column="26" selection-end-line="57" selection-end-column="26" />
+=======
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/A1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="26" lean-forward="true" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
+>>>>>>> Stashed changes
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+<<<<<<< Updated upstream
     <entry file="file:///usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/py4j/protocol.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="186">
@@ -365,12 +484,27 @@
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
+=======
+    <entry file="file://$PROJECT_DIR$/results.tsv">
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="-4179">
+          <caret line="6" column="29" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="29" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
+>>>>>>> Stashed changes
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Linking/Linker.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
         <state relative-caret-position="-82">
           <caret line="38" selection-start-line="38" selection-end-line="38" />
+=======
+        <state relative-caret-position="285">
+          <caret line="19" column="25" selection-start-line="19" selection-start-column="25" selection-end-line="19" selection-end-column="25" />
+>>>>>>> Stashed changes
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

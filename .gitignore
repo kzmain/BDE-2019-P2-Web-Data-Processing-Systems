@@ -9,3 +9,5 @@ data/sample
 sample_predictions.tsv
 testing
 src/beautiful_soup
+.idea
+src/.idea/*
