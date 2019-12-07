@@ -1,7 +1,30 @@
-# wdps2019
+# WDPS - Group 1901
+This repository contains the Lab Assignment of the 2019 - 2020 edition of course Web Data Processing of the Master Computer Science at the Vrije Universiteit Amsterdam.
 
-Web Data Processing Systems 2019 (VU course XM_40020)
+# Application Usage
+Working space: '/home/wdps1901/wdps'
 
+## Step1: Extraction
+This task will extract all usefull information from each web page out of the Web ARChive (WARC).
+First the WARCExtractor is ran, found in WarcExtractor.py, which parses each WARC (checks if its valid and contains enough information) and stores the valid WARC output.
+
+This output is processed further by the TextExtractor, found in TextExtractor.py, which uses the Beautiful Soup library to parse the HTML and extract only the useful information.
+Then, this extracted information (provided as sentences per parsed web page) is processed by SpacyNLP.py which incorporates the Spacy NLP library. This library extracts named entities and provides them for further use to the program.
+
+## Step2: Linking
+After the extraction of named entities from the WARC, the entities can be linked to previously found entities in a knowledge base. This step is provided to us by the course in the form of an Elastic Search server. This server is used to link any found entity and label combination to an already existing entity and label combination in the knowledge base.
+
+## Step3: Output
+After extracting the entities and linking them to found entities in the Knowledge Base through Elastic Search, the output is generated and written to the output_file.
+
+The output follows the following format: '<WARC_ID>...<NLP_MENTION>...<FREEBASE_ID>'
+Where the WARC_ID is the crawled web page ID as provided in the Web ARChive.
+Where the NLP_MENTION is the actual found named entity by Spacy.
+And where the FREEBASE_ID is the ID as found during the linking phase in the Freebase knowledge base.
+
+====================
+# ORIGINAL README
+====================
 # Assignment: Large Scale Entity Linking
 
 The assignment for this course is to perform [Entity
