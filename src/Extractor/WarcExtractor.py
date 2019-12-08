@@ -8,10 +8,11 @@ from Tools.Writer import Writer
 from pyspark import SparkContext
 from pyspark.rdd import RDD
 
+import os
+
 
 class WarcExtractor:
-    SAMPLE_ONLY = True
-    SAMPLE_SIZE = 92
+    SAMPLE_SIZE = int(os.getenv('SAMPLE_SIZE', 0))
 
     SIZE_THRESHOLD = 100
 
@@ -38,7 +39,7 @@ class WarcExtractor:
                 key = headers[WarcExtractor.HEADER_ID]
                 uri = headers[WarcExtractor.HEADER_URI]
 
-                if WarcExtractor.SAMPLE_ONLY and int(key.split('-')[3]) > WarcExtractor.SAMPLE_SIZE: return None
+                if WarcExtractor.SAMPLE_SIZE > 0 and int(key.split('-')[3]) > WarcExtractor.SAMPLE_SIZE: return None
 
                 payload = '\n\n'.join(payload_split[2:])  # Remove headers
 

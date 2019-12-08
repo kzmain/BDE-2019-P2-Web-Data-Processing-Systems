@@ -8,8 +8,11 @@ from Linking.Linker import Linker
 from NLP.SpacyNLP import SpacyNLP
 from System import Columns
 
-java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
-os.environ['JAVA_HOME'] = java8_location
+#java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
+#os.environ['JAVA_HOME'] = java8_location
+
+# crashes on cache if this is not enabled (thijmen)
+os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 ES_HOST = "localhost:9200"
 TRIDENT_HOST = "localhost:9090"
