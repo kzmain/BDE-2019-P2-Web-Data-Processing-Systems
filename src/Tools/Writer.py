@@ -14,3 +14,4 @@ class Writer():
         with open(out_file, mode) as file:
             for item in out_list:
                 file.write('%s\n' % item)
+
