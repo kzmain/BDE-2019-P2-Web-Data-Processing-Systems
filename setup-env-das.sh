@@ -14,7 +14,5 @@ export PYSPARK_PYTHON="venv/bin/python"
 
 "$PYTHON" -m venv venv
 source venv/bin/activate
-pip install -U pip
-pip install -r requirements.pip
-python3 -m spacy download en_core_web_sm
+sh setup-env-local.sh
 deactivate
