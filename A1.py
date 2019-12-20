@@ -69,7 +69,7 @@ def create_spark_app() -> SparkSession:
 # Initialise spark
 app = create_spark_app()
 sc = app.sparkContext # type: SparkContext
-sc.setLogLevel("ALL")
+# sc.setLogLevel("ALL")
 
 # Extract information from WARC file and parse HTML with TextExtractor (returns string of sentences per webpage)
 warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE)
