@@ -3,18 +3,18 @@ This repository contains the Lab Assignment of the 2019 edition of the course We
 
 # Project Usage
 The project can be used in different environments, each supported environment is listed below with a description of the setup commands:
-* *Local machine*: (1) activate any virtual environment you want (2) run `./setup-env-local.sh`. Note: do not forget to activate your environment when running the project! 
-* *DAS4 Node*: run `./setup-env-das.sh`, and run `. activate-env-das.sh` before executing the project on a node (not required when executing in the cluster).
-* *DAS4 Spark Cluster*: run `./setup-env-das.sh`.
+* **Local machine**: (1) activate any virtual environment you want (2) run `./setup-env-local.sh`. Note: do not forget to activate your environment when running the project! 
+* **DAS4 Node***: run `./setup-env-das.sh`, and run `. activate-env-das.sh` before executing the project on a node (not required when executing in the cluster).
+* **DAS4 Spark Cluster(*: run `./setup-env-das.sh`.
 
-To run the project either *locally or on a DAS4 node*, run the command: `python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
+To run the project either **locally or on a DAS4 node**, run the command: `python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
 * Replace `WARC_ARCHIVE` with the archive that you want to link (e.g. `data/sample.warc.gz`). It is also possible to input an HDFS file in the following matter: `hdfs://..`.
 * Replace `OUTPUT_FILE` with the file to which you would like to output (e.g. `results.tsv`).
 * Replace `ES_HOST` with the host and port on which the Elastic Search instance is running (e.g. `localhost:9200`).
 
 Additionally, it is possible to limit the sample size by passing the `SAMPLE_SIZE` environment variable. This will make the system only process `N` number of WARC archives (e.g. `SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`). It is also possible to automatically calculate the resulting F1 score by prefixing `CALC_SCORE=True` like this: `CALC_SCORE=True SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
 
-To run the project on the *DAS4 Spark Cluster* run: `./submit.sh`. In order to get the `.tsv` file a merge of the cluster output has to be done, run this merge by simply executing `python3 merge.py`, this will output the `results.tsv` file.
+To run the project on the **DAS4 Spark Cluster** run: `./submit.sh`. In order to get the `.tsv` file a merge of the cluster output has to be done, run this merge by simply executing `python3 merge.py`, this will output the `results.tsv` file.
 
 # Knowledge Acquisition
 ![](images/pipeline.png)
