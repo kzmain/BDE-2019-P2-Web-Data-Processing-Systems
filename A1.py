@@ -26,9 +26,9 @@ from System import Columns
 ###     |   Declare constants   |
 ###     =========================
 
-ES_HOST = "localhost:9200"
-TRIDENT_HOST = "localhost:9090"
-WARC_ARCHIVE = "../data/sample.warc.gz"
+ES_HOST = "node001:9200"
+TRIDENT_HOST = "node001:9090"
+WARC_ARCHIVE = "hdfs:///user/bbkruit/sample.warc.gz"
 OUTPUT_FILE = 'results.tsv'
 
 CALC_SCORE = os.getenv('CALC_SCORE', False)
