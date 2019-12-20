@@ -7,12 +7,14 @@ The project can be used in different environments, each supported environment is
 * **DAS4 Node***: run `./setup-env-das.sh`, and run `. activate-env-das.sh` before executing the project on a node (not required when executing in the cluster).
 * **DAS4 Spark Cluster**: run `./setup-env-das.sh`.
 
-To run the project either **locally or on a DAS4 node**, run the command: `python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
+To run the project either **locally or on a DAS4 node**, run the command: `LOCAL=TRUE python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
 * Replace `WARC_ARCHIVE` with the archive that you want to link (e.g. `data/sample.warc.gz`). It is also possible to input an HDFS file in the following matter: `hdfs://..`.
 * Replace `OUTPUT_FILE` with the file to which you would like to output (e.g. `results.tsv`).
 * Replace `ES_HOST` with the host and port on which the Elastic Search instance is running (e.g. `localhost:9200`).
 
-Additionally, it is possible to limit the sample size by passing the `SAMPLE_SIZE` environment variable. This will make the system only process `N` number of WARC archives (e.g. `SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`). It is also possible to automatically calculate the resulting F1 score by prefixing `CALC_SCORE=True` like this: `CALC_SCORE=True SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
+*Alternative:* run the `LOCAL=TRUE python3 A1.py` command to start the project with default values (specified below).
+
+Additionally, it is possible to limit the sample size by passing the `SAMPLE_SIZE` environment variable. This will make the system only process `N` number of WARC archives (e.g. `SAMPLE_SIZE=N LOCAL=TRUE python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`). It is also possible to automatically calculate the resulting F1 score by prefixing `CALC_SCORE=True` like this: `CALC_SCORE=True LOCAL=TRUE SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
 
 To run the project on the **DAS4 Spark Cluster** run: `./submit.sh`. In order to get the `.tsv` file a merge of the cluster output has to be done, run this merge by simply executing `python3 merge.py`, this will output the `results.tsv` file.
 
@@ -56,3 +58,19 @@ The output follows the following format: `<WARC_ID>\t<NLP_MENTION>\t<FREEBASE_ID
 
 # Results
 The F1 score when executing the project on the sample archive provided by the course equals to: `0.23906`.
+
+# Default values
+*Local defaults:*
+```
+ES_HOST = "localhost:9200"
+TRIDENT_HOST = "localhost:9090"
+WARC_ARCHIVE = "data/sample.warc.gz"
+OUTPUT_FILE = 'results.tsv'
+```
+*DAS4 Spark Cluster defaults:*
+```
+ES_HOST = "node001:9200"
+TRIDENT_HOST = "node001:9090"
+WARC_ARCHIVE = "hdfs:/user/bbkruit/sample.warc.gz"
+OUTPUT_FILE = "hdfs:/user/wdps1901/results.tsv"
+```
