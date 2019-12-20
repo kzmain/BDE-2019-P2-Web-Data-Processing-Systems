@@ -95,13 +95,13 @@ link_df.write.csv(tmp_out_file, mode="overwrite", sep="\t", header=False)
 print("concatinating...")
 if LOCAL:
     os.system('cat %s/* > %s'%(tmp_out_file, OUTPUT_FILE))
-
-    if CALC_SCORE:
-        os.system('python score.py data/sample.annotations.tsv %s' % (OUTPUT_FILE))
 else:
     tmp_file = 'tmp.tsv'
 
     os.system('hadoop fs -getmerge %s/*.csv %s'%(tmp_out_file, tmp_file))
-    os.system('hadoop fs -moveFromLocal %s %s'%(tmp_file, OUTPUT_FILE))
+    os.system('hadoop fs -put -f %s %s'%(tmp_file, OUTPUT_FILE))
 
 print("out_file: %s"%OUTPUT_FILE)
+
+if CALC_SCORE:
+    os.system('python score.py data/sample.annotations.tsv %s' % (OUTPUT_FILE))

@@ -1,4 +1,5 @@
 import sys
+import os 
 
 ###     ==================================================================
 ###     |                                                                |
@@ -10,6 +11,11 @@ import sys
 
 gold_file = sys.argv[1]
 pred_file = sys.argv[2]
+
+if pred_file.startswith("hdfs"):
+    intermediate_file = 'hdfs_results.tsv'
+    os.system('hadoop fs -get -f %s %s' %(pred_file, intermediate_file))
+    pred_file = intermediate_file
 
 # Load the gold standard
 gold = {}
