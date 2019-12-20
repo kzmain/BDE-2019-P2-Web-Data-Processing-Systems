@@ -32,12 +32,12 @@ deactivate
 # The awkward zip invocation for venv just creates nicer relative
 # paths.
 pushd venv/
-zip -rq ../venv.zip *
+# zip -rq ../venv.zip *
 popd
 
 # Here it's important that application/ be zipped in this way so that
 # Python knows how to load the module inside.
-# zip -rq src.zip Extractor/ Linking/ NLP/ System/ Tools/
+zip -rq src.zip Extractor/ Linking/ NLP/ System/ Tools/
 
 # We want YARN to use the Python from our virtual environment,
 # which includes all our dependencies.
