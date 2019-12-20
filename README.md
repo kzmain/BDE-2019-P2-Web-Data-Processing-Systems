@@ -24,9 +24,18 @@ Next, this extracted information (provided as sentences per parsed web page) is 
 To summarise, this step performs (1) WARC Extraction (2) HTML Parsing and removing non-interesting data (3) NLP Preprocessing. This will return a set of Named Entities with their respective Named Entity Recognition NER tag.
 
 ## Step2: Linking
-After the extraction of Named Entities, the entities can be linked to previously found entities in a knowledge base. This step is provided to us by the course in the form of an Elastic Search server. This server is used to link any found Entity and Label combination to an already existing Entity and Label combination in the knowledge base.
+After the extraction of Named Entities, the entities can be linked to previously found entities in a knowledge base. The actual link step is provided to us by the course in the form of an Elastic Search server. This server is used to link any found Entity and Label combination to an already existing Entity and Label combination in the knowledge base.
 
 The Elastic Search, as provided to us by the course, uses the FreeBase knowledge base. Freebase was a large collaborative knowledge base consisting of data composed mainly by it's community members but has now been shut down (2016) by Google after acquiring the company in 2010.
+
+## Entity Generation
+
+
+## Entity Ranking
+
+
+## Unlinkable Mention Prediction
+
 
 To perform an accurate linking of the found Named Entities and their Labels to the Named Entities and labels from the knowledge base, some ranking of the found links has to be considered. Querying Elastic Search for the found Named Entity and Label combination gives back a series of probable links and their score. Based on this score a first filter is applied, the score must be greater than `6` (chosen as the `THRESHOLD_SCORE`), any link with a lower score is no longer considered and any link that passed this filter is appended to the list of results with an added `DICE_SCORE` which is calculated to be the `Sorensen Dice Score`.
 
