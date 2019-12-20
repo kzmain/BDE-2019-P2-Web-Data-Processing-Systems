@@ -24,7 +24,6 @@ import spacy
 
 class Linker:
     THRESHOLD_SCORE = 6
-    THRESHOLD_SCORE_DICE = 0.65
 
     nlp = spacy.load("en_core_web_sm")
 
