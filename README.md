@@ -16,7 +16,7 @@ To run the project either **locally or on a DAS4 node**, run the command: `LOCAL
 
 Additionally, it is possible to limit the sample size by passing the `SAMPLE_SIZE` environment variable. This will make the system only process `N` number of WARC archives (e.g. `SAMPLE_SIZE=N LOCAL=TRUE python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`). It is also possible to automatically calculate the resulting F1 score by prefixing `CALC_SCORE=True` like this: `CALC_SCORE=True LOCAL=TRUE SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
 
-To run the project on the **DAS4 Spark Cluster** run: `./submit.sh`. In order to get the `.tsv` file a merge of the cluster output has to be done, run this merge by simply executing `python3 merge.py`, this will output the `results.tsv` file.
+To run the project on the **DAS4 Spark Cluster** run: `./submit.sh`. In order to get the `.tsv` file a merge of the cluster output has to be done, run this merge by simply executing `python3 merge.py`, this will output the `results.tsv` file. Note that default values for the DAS4 Spark Cluster can be changed by editing the `A1.py` file under `declare constants` section (more specifically, the variables in the `not LOCAL` if clause).
 
 # Knowledge Acquisition
 ![](images/pipeline.png)
