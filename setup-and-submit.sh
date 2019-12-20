@@ -60,4 +60,4 @@ spark-submit \
     --conf "spark.yarn.appMasterEnv.PYSPARK_PYTHON=$PYSPARK_PYTHON" \
     --archives "venv.zip#venv" \
     --py-files "src.zip" \
-    src/A1.py
+    A1.py
