@@ -74,6 +74,7 @@ class WarcExtractor:
         # Filter and extract the valuable information from 
         # the WARC file in parallel and return as a DataFrame
         warc_df = file_reader \
+            .partitionBy(100) \
             .map(WarcExtractor.__parse_record) \
             .filter(lambda x: x is not None) \
             .toDF([Columns.WARC_ID, Columns.WARC_URL, Columns.WARC_CONTENT])

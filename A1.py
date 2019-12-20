@@ -94,4 +94,4 @@ with open(OUTPUT_FILE, 'w') as f:
         f.write('%s\t%s\t%s\n' % (row[Columns.WARC_ID], row[Columns.NLP_MENTION], row[Columns.FREEBASE_ID]))
 
 if CALC_SCORE:
-    os.system('python ../score.py ../data/sample.annotations.tsv %s' % OUTPUT_FILE)
+    os.system('python score.py data/sample.annotations.tsv %s' % OUTPUT_FILE)
