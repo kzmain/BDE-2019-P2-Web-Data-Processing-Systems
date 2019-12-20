@@ -1,8 +1,6 @@
 import os
 import sys
 
-sys.path.insert(1, 'src')
-
 from pyspark.sql.session import SparkSession
 
 from Extractor.TextExtractor import TextExtractor
@@ -26,9 +24,12 @@ from System import Columns
 ###     |   Declare constants   |
 ###     =========================
 
-ES_HOST = "node001:9200"
-TRIDENT_HOST = "node001:9090"
-WARC_ARCHIVE = "hdfs:///user/bbkruit/sample.warc.gz"
+#ES_HOST = "node001:9200"
+#TRIDENT_HOST = "node001:9090"
+#WARC_ARCHIVE = "hdfs:///user/bbkruit/sample.warc.gz"
+ES_HOST = "localhost:9200"
+TRIDENT_HOST = "localhost:9090"
+WARC_ARCHIVE = "data/sample.warc.gz"
 OUTPUT_FILE = 'results.tsv'
 
 CALC_SCORE = os.getenv('CALC_SCORE', False)
@@ -61,7 +62,6 @@ def create_spark_app() -> SparkSession:
     return SparkSession \
         .builder \
         .appName("A1") \
-        .master("yarn")
         .getOrCreate()
 
 # Initialise spark
