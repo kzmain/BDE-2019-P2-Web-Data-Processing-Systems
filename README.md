@@ -1,6 +1,13 @@
 # WDPS - Group 1901
 This repository contains the Lab Assignment of the 2019 edition of the course Web Data Processing of the Master Computer Science at the Vrije Universiteit Amsterdam.
 
+Project members:
+* Berk Aydaşgil (2642848,bal320)
+* Kai Zhang (xxxxxxx, xxxxxx)
+* Stan Swanborn (2627602, ssn425)
+* Thijmen Kurk (2627603, tkk690)
+
+
 # Project Usage
 The project can be used in different environments, each supported environment is listed below with a description of the setup commands:
 * **Local machine**: (1) activate any virtual environment you want (2) run `./setup-env-local.sh`. Note: do not forget to activate your environment when running the project! 
