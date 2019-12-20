@@ -25,12 +25,17 @@ from System import Columns
 ###     |   Declare constants   |
 ###     =========================
 
-ES_HOST = "node001:9200"
-TRIDENT_HOST = "node001:9090"
-WARC_ARCHIVE = "hdfs:///user/bbkruit/sample.warc.gz"
-# ES_HOST = "localhost:9200"
-# TRIDENT_HOST = "localhost:9090"
-# WARC_ARCHIVE = "data/sample.warc.gz"
+LOCAL = os.getenv("LOCAL", False)
+
+if not LOCAL:
+    ES_HOST = "node001:9200"
+    TRIDENT_HOST = "node001:9090"
+    WARC_ARCHIVE = "hdfs:///user/bbkruit/sample.warc.gz"
+else:
+    ES_HOST = "localhost:9200"
+    TRIDENT_HOST = "localhost:9090"
+    WARC_ARCHIVE = "data/sample.warc.gz"
+
 OUTPUT_FILE = 'results.tsv'
 
 CALC_SCORE = os.getenv('CALC_SCORE', False)
@@ -60,11 +65,14 @@ print("="*40)
 ###     |    Spark Initialisation    |
 ###     ==============================
 def create_spark_app() -> SparkSession:
-    return SparkSession \
+    conf = SparkSession \
         .builder \
-        .appName("A1") \
-        .master("yarn") \
-        .getOrCreate()
+        .appName("A1")
+
+    if not LOCAL:
+        conf = conf.master("yarn")
+
+    return conf.getOrCreate()
 
 # Initialise spark
 app = create_spark_app()

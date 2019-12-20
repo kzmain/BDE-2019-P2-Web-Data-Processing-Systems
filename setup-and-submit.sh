@@ -32,7 +32,7 @@ deactivate
 # The awkward zip invocation for venv just creates nicer relative
 # paths.
 pushd venv/
-# zip -rq ../venv.zip *
+zip -rq ../venv.zip *
 popd
 
 # Here it's important that application/ be zipped in this way so that
@@ -59,6 +59,7 @@ spark-submit \
     --deploy-mode cluster \
     --conf "spark.yarn.appMasterEnv.SPARK_HOME=$SPARK_HOME" \
     --conf "spark.yarn.appMasterEnv.PYSPARK_PYTHON=$PYSPARK_PYTHON" \
+    --conf "spark.yarn.appMasterEnv.SAMPLE_SIZE=10" \
     --archives "venv.zip#venv" \
     --py-files "src.zip" \
     A1.py
