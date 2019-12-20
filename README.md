@@ -26,7 +26,7 @@ Additionally, it is possible to limit the sample size by passing the `SAMPLE_SIZ
 To run the project on the **DAS4 Spark Cluster** run: `./submit.sh`. In order to get the `.tsv` file a merge of the cluster output has to be done, run this merge by simply executing `python3 merge.py`, this will output the `results.tsv` file. Note that default values for the DAS4 Spark Cluster can be changed by editing the `A1.py` file under `declare constants` section (more specifically, the variables in the `not LOCAL` if clause).
 
 # Knowledge Acquisition
-![](images/pipeline.png)
+![](https://i.imgur.com/jHA6fFK.png)
 
 This project follows the pipeline described in the lectures of the WDPS course as displayed in the image above. Note that there is one additional step added marked in orange. This step is the extraction of raw text from the Web ARChive(WARC).
 
