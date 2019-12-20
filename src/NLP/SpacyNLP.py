@@ -12,6 +12,14 @@ from pyspark.sql import DataFrame
 from System import Columns as Col
 from Tools.Writer import Writer
 
+###     ====================================================================================
+###     |                                                                                  |
+###     |   This class implements the NLP library Spacy                                    |
+###     |       It is responsible for offering NLP Pre-processing to the application       |
+###     |       The class performs NER tasks on text as provided by the TextExtractor.py   |
+###     |                                                                                  |
+###     ====================================================================================
+
 class SpacyNLP:
     nlp = spacy.load("en_core_web_sm")
 
@@ -43,6 +51,8 @@ class SpacyNLP:
             m += 1
         return has_alpha, m / n # Return if text has alphabetical text and ratio as tuple
    
+    # Return token dictionary for the current NLP 
+    # with the payload selected for that NLP instance
     @staticmethod
     def __get_token_dict(nlp):
 
@@ -53,6 +63,11 @@ class SpacyNLP:
                                       SpacyNLP.TOKEN_DEP: token.dep_}
         return token_dict
 
+    # Confirm if the entity (ent):
+    #   - if it starts with an alphabet character or numerical
+    #   - if it is not a domain name
+    #   - if a double space does not exist
+    #   - has correct special chars to alphabet ratio (< 0.1)
     @staticmethod
     def __confirm_filter(ent):
         ent = str(ent)
@@ -63,6 +78,11 @@ class SpacyNLP:
                 and "  " not in ent \
                 and ratio < 0.1
 
+    # Pack the entity as a list of:
+    #   - the Entity,
+    #   - the Part-Of-Speech tags,
+    #   - the Token (word) tags,
+    #   - the Syntactic Dependency tags
     @staticmethod
     def __pack_entity(ent, token_dict):
         ent = str(ent)
@@ -78,6 +98,8 @@ class SpacyNLP:
                 pass
         return [ent, pos_list, tag_list, dep_list]
 
+    # Generate Named Entities as found by Spacy
+    #    # Filter on only 'interesting' Spacy NLP Entity tags
     @staticmethod
     def __generate_entities(key, payload):
         print("SpacyNLP: %s" % key)
@@ -92,6 +114,8 @@ class SpacyNLP:
                 ent_set.add(str(ent))
         return entries
 
+    # The collective function in which all Named Entities are recognized in the text
+    #   as providede by the TextExtractor, packed in a DataFrame.
     @staticmethod
     def extract(text_df: DataFrame, out_file=""):
         sum_cols = udf(SpacyNLP.__generate_entities, ArrayType(ArrayType(StringType())))

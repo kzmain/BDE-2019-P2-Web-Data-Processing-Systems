@@ -21,21 +21,43 @@ import json
 import textdistance
 import spacy
 
+###     ============================================================================
+###     |                                                                          |
+###     |   This is the Linker class                                               |
+###     |       It is responsible for generating candidate entities as found       |
+###     |       by the Elastic Search server by querying for each Named Entity     |
+###     |       as found by the NLP Preprocessing task. It ranks the candidates    |
+###     |       and selects the most probable link (highest rank) and finalises.   |
+###     |                                                                          |
+###     ============================================================================
 
 class Linker:
+###     =========================
+###     |   Declare constants   |
+###     =========================
+
+    # Theshold on freebase_score as provided by the  
+    # FreeBase instance behind the Elastic Search server.
     THRESHOLD_SCORE = 6
 
+    # Load the small (web_sm) Spacy package for the English language
+    # Instead of the large (web_lg) as it gave a non-significant 
+    # improvement but increased execution time significantly
     nlp = spacy.load("en_core_web_sm")
 
+    # Tokenize each sentence into words
     @staticmethod
     def __tokenize(a):
         for word in Linker.nlp(a):
             yield word.text
 
+    # Calculate the Sorensen Dice Score for two entities.
     @staticmethod
     def __sorensen_dice(a, b):
         return textdistance.sorensen_dice(Linker.__tokenize(a), Linker.__tokenize(b))
 
+    # UNUSED AS IT CURRENTLY STANDS (gave no significant improvement of F1-Score)
+    # Query the provided trident with SPARQL with the Named Entities found
     @staticmethod
     def sparql(domain, fb_id):
         # url = 'http://%s/sparql' % domain
@@ -57,6 +79,12 @@ class Linker:
                 print(e)
                 raise e
 
+    #   Query the Elastic Search server instance with the found Named Entities
+    #       - Retrieve the Candidate Entities   (Candidate Entity Generation)
+    #       - Rank the Candidate Entities       (Candidate Entity Ranking)      >> Automatically done (freebase_score)
+    #           - Remove unlinkable Entities    (Unlinkable Mention Prediction)
+    #       
+    #       -- Return a list of Named Entities with their probable links (Candidate Entities)
     @staticmethod
     def query(domain, key, text):
         conn = http.client.HTTPConnection(domain.split(':')[0], int(domain.split(':')[1]))

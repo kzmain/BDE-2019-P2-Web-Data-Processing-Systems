@@ -11,6 +11,14 @@ from pyspark.rdd import RDD
 
 import os
 
+###     ==========================================================================
+###     |                                                                        |
+###     |   This is the WarcExtractor class                                      |
+###     |       It is responsible for extracting the HTML from the               |
+###     |       available webpages as provided by the WARC file in A1.py.        |
+###     |       It uses the Hadoop HDFS system and reads the WARC file as RDD.   |
+###     |                                                                        |
+###     ==========================================================================
 
 class WarcExtractor:
     SAMPLE_SIZE = int(os.getenv('SAMPLE_SIZE', 0))
@@ -22,6 +30,7 @@ class WarcExtractor:
     HEADER_ID = "WARC-TREC-ID"
     HEADER_URI = "WARC-Target-URI"
 
+    # Parse each entry (webpage) from the WARC file.
     @staticmethod
     def __parse_record(entry):
         _, raw_record = entry
@@ -35,7 +44,7 @@ class WarcExtractor:
             for line in warc_header.splitlines():
                 split = line.split(': ')
                 headers[split[0]] = ': '.join(split[1:])
-
+            
             if WarcExtractor.HEADER_ID in headers and WarcExtractor.HEADER_URI in headers:
                 key = headers[WarcExtractor.HEADER_ID]
                 uri = headers[WarcExtractor.HEADER_URI]
@@ -51,6 +60,7 @@ class WarcExtractor:
                     return key, host, payload
         return None
 
+    # Read the WARC file as an RDD and let Spark handle the distribution among workers
     @staticmethod
     def extract(sc: SparkContext, warc_file, out_file="") -> DataFrame:
         file_reader = sc.newAPIHadoopFile(
@@ -61,6 +71,8 @@ class WarcExtractor:
             conf={'textinputformat.record.delimiter': WarcExtractor.FILE_DELIMETER}
         ) # type: RDD
 
+        # Filter and extract the valuable information from 
+        # the WARC file in parallel and return as a DataFrame
         warc_df = file_reader \
             .map(WarcExtractor.__parse_record) \
             .filter(lambda x: x is not None) \

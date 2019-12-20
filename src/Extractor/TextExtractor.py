@@ -11,9 +11,22 @@ from Tools.Writer import Writer
 
 import spacy
 
+###     ======================================================================
+###     |                                                                    |
+###     |   This is the TextExtractor class                                  |
+###     |       It is responsible for parsing the HTML and extracting        |
+###     |       the interesting information, providing it as a string of     |
+###     |       sentences per crawled webpage as provided by the WARC file   |
+###     |                                                                    |
+###     ======================================================================
+
 class TextExtractor:
+    # Use the SMALL (web_sm instead of web_lg) as the accuracy improvement 
+    # is not significant but the execution time impact is considerable.
     nlp = spacy.load("en_core_web_sm")
 
+    # These tags are considered to not contain any valuable information
+    # for the NLP Preprocessing step and are thus removed.
     TAGS_TO_REMOVE = [
         'head', 'title',
         'footer', 'header',

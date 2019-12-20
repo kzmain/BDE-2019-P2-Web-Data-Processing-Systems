@@ -1,5 +1,13 @@
 import xlsxwriter
 
+###     =====================================================
+###     |                                                   |
+###     |   This file specifies the generalised functions   |
+###     |       for writing DataFrames from execution       |
+###     |       to their respective output formats          |
+###     |                                                   |
+###     =====================================================
+
 class Writer():
     @staticmethod
     def csv_writer(out_file, df):

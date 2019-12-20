@@ -1,6 +1,13 @@
 import gzip
 import sys
 
+###     ============================================
+###     |                                          |
+###     |   This is the starter-code example       |
+###     |       As provided to us by this course   |
+###     |                                          |
+###     ============================================
+
 KEYNAME = "WARC-TREC-ID"
 
 def find_labels(payload, labels):
