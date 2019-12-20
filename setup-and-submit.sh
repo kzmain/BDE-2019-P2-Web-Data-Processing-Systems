@@ -56,7 +56,7 @@ export PYSPARK_PYTHON="venv/bin/python"
 spark-submit \
     --name "wdps01-pipeline" \
     --master yarn \
-    --deploy-mode cluster \
+    --deploy-mode client \
     --conf "spark.yarn.appMasterEnv.SPARK_HOME=$SPARK_HOME" \
     --conf "spark.yarn.appMasterEnv.PYSPARK_PYTHON=$PYSPARK_PYTHON" \
     --archives "venv.zip#venv" \
