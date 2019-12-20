@@ -30,7 +30,6 @@ class Linker:
                   Columns.LINKER_LABEL,
                   Columns.LINKER_FB_ID]
 
-    SELECT_COUNT = 1
     NO_FREEBASE_LIST = []
 
     nlp = spacy.load("en_core_web_sm")
@@ -67,7 +66,6 @@ class Linker:
 
     @staticmethod
     def query(elastic_domain, trident_domain, query):
-
         conn = http.client.HTTPConnection(elastic_domain.split(':')[0], int(elastic_domain.split(':')[1]))
         conn.request('GET', '/freebase/label/_search?%s' % urllib.parse.urlencode({'q': query, 'size': 1000}))
         response = conn.getresponse()

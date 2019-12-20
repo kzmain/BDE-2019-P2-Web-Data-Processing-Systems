@@ -1,5 +1,5 @@
 # WDPS - Group 1901
-This repository contains the Lab Assignment of the 2019 - 2020 edition of course Web Data Processing of the Master Computer Science at the Vrije Universiteit Amsterdam.
+This repository contains the Lab Assignment of the 2019 edition of course Web Data Processing of the Master Computer Science at the Vrije Universiteit Amsterdam.
 
 # Application Usage
 Working space: '/home/wdps1901/wdps'

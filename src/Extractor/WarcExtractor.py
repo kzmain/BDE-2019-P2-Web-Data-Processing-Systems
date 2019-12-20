@@ -6,6 +6,7 @@ from System import Columns
 from Tools.Writer import Writer
 
 from pyspark import SparkContext
+from pyspark.sql import DataFrame
 from pyspark.rdd import RDD
 
 import os
@@ -51,7 +52,7 @@ class WarcExtractor:
         return None
 
     @staticmethod
-    def extract(sc: SparkContext, warc_file, out_file=""):
+    def extract(sc: SparkContext, warc_file, out_file="") -> DataFrame:
         file_reader = sc.newAPIHadoopFile(
             warc_file,
             'org.apache.hadoop.mapreduce.lib.input.TextInputFormat',

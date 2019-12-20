@@ -72,14 +72,11 @@ class SpacyNLP:
     def __confirm_filter(ent):
         ent = str(ent)
         has_alpha, ratio = SpacyNLP.__special_ratio(ent)
-        if has_alpha \
+        return has_alpha \
                 and (ent[0].isalpha() or ent[0].isnumeric()) \
                 and not validators.domain(ent.lower()) \
                 and "  " not in ent \
-                and ratio < 0.1:
-            return True
-        else:
-            return False
+                and ratio < 0.1
 
     @staticmethod
     def __pack_entity(ent, token_dict):

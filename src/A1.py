@@ -1,4 +1,5 @@
 import os
+import sys
 
 from pyspark.sql.session import SparkSession
 
@@ -19,21 +20,39 @@ TRIDENT_HOST = "localhost:9090"
 WARC_ARCHIVE = "../data/sample.warc.gz"
 OUTPUT_FILE = 'results.tsv'
 
+argv_count = len(sys.argv)
+if argv_count == 1:
+    print("working with default arguments, run with '--help' to view possible arguments...")
+elif argv_count == 2 and sys.argv[1] == "--help":
+    print("usage: python3 %s WARC_ARCHIVE OUTPUT_FILE ES_HOST" % __file__)
+    sys.exit(0)
+elif argv_count == 4:
+    WARC_ARCHIVE = sys.argv[1]
+    OUTPUT_FILE = sys.argv[2]
+    ES_HOST = sys.argv[3]
 
-def create_spark_app():
+print("arguments: (WARC_ARCHIVE: '%s', OUTPUT_FILE: '%s', ES_HOST: '%s')"%(WARC_ARCHIVE, OUTPUT_FILE, ES_HOST))
+
+print("running spark...")
+print("="*40)
+
+def create_spark_app() -> SparkSession:
     return SparkSession \
         .builder \
         .appName("A1") \
         .getOrCreate()
-
 
 app = create_spark_app()
 sc = app.sparkContext
 
 warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE, 'raw.csv')
 text_df = TextExtractor.extract(warc_df, 'text.csv')
+# text_df = app.createDataFrame(text_df.collect())
+
 nlp_df = SpacyNLP.extract(text_df, 'nlp.csv')
+# nlp_df = app.createDataFrame(nlp_df.collect())
 link_df = Linker.link(ES_HOST, TRIDENT_HOST, app, nlp_df, 'linked.csv')
+# link_df = app.createDataFrame(link_df.collect())
 
 df = link_df.toPandas()
 with open(OUTPUT_FILE, 'w') as f:
