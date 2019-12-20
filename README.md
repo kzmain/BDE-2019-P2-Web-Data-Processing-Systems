@@ -2,52 +2,51 @@
 This repository contains the Lab Assignment of the 2019 edition of course Web Data Processing of the Master Computer Science at the Vrije Universiteit Amsterdam.
 
 # Application Usage
-Working space: '/home/wdps1901/wdps'
+Run the command: `python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`, note that `A1.py` is located in the `src` directory.
 
--- TODO: Thijmen add commands to run, output files and where to find them and the pipeline flow.
-Run:
-- Run: `WarcExtractor.py ??`
-- Change:
+* Replace `WARC_ARCHIVE` with the archive that you want to link (e.g. `data/sample.warc.gz`). It is also possible to input a HDFS file in the following matter: `hdfs://..`.
+* Replace `OUTPUT_FILE` with the file to which you would like to output (e.g. `results.tsv`).
+* Replace `ES_HOST` with the host and port on which the Elastic Search instance is running (e.g. `localhost:9200`).
 
-Output:
+Additionally, it is possible to limit the sample size by passing the `SAMPLE_SIZE` environment variable. This will make the system only process `N` number of WARC archives (e.g. `SAMPLE_SIZE=N python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`).
 
-Configuration:
+# Knowledge Acquisition
+![](images/pipeline.png)
 
+This project follows the pipeline described in the lectures of WDPS as displayed in the image above. Note that there is one additional step added marked in orange. This step is the extraction of raw text from the Web ARChive(WARC).
 
-## Step1: Extraction
-This task will extract all usefull information from each web page out of the Web ARChive (WARC).
-First the WARCExtractor is ran, found in WarcExtractor.py, which parses each WARC (checks if its valid and contains enough information) and stores the valid WARC output.
+## Step 1: Extract text from Web ARChive
+This task will extract all the raw text from each web page out of the WARC. This is done by the WARCExtractor, found in `WarcExtractor.py`, which parses the HTML inside of each WARC and checks if its valid and contains enough information.
 
-This output is processed further by the TextExtractor, found in TextExtractor.py, which uses the Beautiful Soup library to parse the HTML and extract only the useful information.
-Next, this extracted information (provided as sentences per parsed web page) is processed by SpacyNLP.py which incorporates the Spacy NLP library. This library extracts Named Entities and provides them for further use to the program.
-
-To summarise, this step performs (1) WARC Extraction (2) HTML Parsing and removing non-interesting data (3) NLP Preprocessing. This will return a set of Named Entities with their respective Named Entity Recognition NER tag.
-
-## Step2: Linking
-After the extraction of Named Entities, the entities can be linked to previously found entities in a knowledge base. The actual link step is provided to us by the course in the form of an Elastic Search server. This server is used to link any found Entity and Label combination to an already existing Entity and Label combination in the knowledge base.
-
-The Elastic Search, as provided to us by the course, uses the FreeBase knowledge base. Freebase was a large collaborative knowledge base consisting of data composed mainly by it's community members but has now been shut down (2016) by Google after acquiring the company in 2010.
-
-## Entity Generation
+The next step is to process the HTML and extract the raw text, this is done by the TextExtractor, found in `TextExtractor.py`. The TextExtractor uses the BeautifulSoup library to do the parsing and text extraction. Additionally it uses Spacy, which is an NLP library, to parse the different sentences found inside of the raw text.
 
 
-## Entity Ranking
+## Step 2: NLP Preprocessing and Information Extraction
+Next, the raw text is converted to refined text, which is done using a NLP library. The actual NLP preprocessing is performed by the class SpacyNLP, found in `SpacyNLP.py` (also utilizing Spacy).  
 
+The raw text is put through the Spacy NLP pipeline, this pipeline tokenizes the text, performs part-of-speech tagging and finally performs Named Entity Recognition (NER). The extracted entity mentions are put through a series of sanity checks to reduce noise (e.g. an entity mention must contain at least one alpha character).
 
-## Unlinkable Mention Prediction
+Note that the two steps, NLP preprocessing and Information extraction, have been merged together.
 
+## Step 3: Linking
+Next, the entities mentions are linked to the knowledge base. The knowledge base is Freebase and is accessed through an Elastic Search server. The linking process is divided into three parts, each part is briefly described below. 
 
-To perform an accurate linking of the found Named Entities and their Labels to the Named Entities and labels from the knowledge base, some ranking of the found links has to be considered. Querying Elastic Search for the found Named Entity and Label combination gives back a series of probable links and their score. Based on this score a first filter is applied, the score must be greater than `6` (chosen as the `THRESHOLD_SCORE`), any link with a lower score is no longer considered and any link that passed this filter is appended to the list of results with an added `DICE_SCORE` which is calculated to be the `Sorensen Dice Score`.
+### Candidate Entity Generation
+The candidate entities for each entity mention are generated by performing a query on Freebase through the Elastic Search server. This query contains the name of the entity mention and returns the candidates entities found in Freebase sorted by the Elastic Search score. The Elastic Search score represents how relevant a match is to the query. 
 
-For each link, the hamming score is also calculated and based on a threshold (`> 0.65`) links are further filtered. 
-The link ultimately selected as the correct link is the link that:
+### Entity Ranking
+The entity ranking is performed using two features, the Sorensen Dice coefficient and the Elastic Search score. For each candidate entity the Sorensen Dice coefficient is computed giving the similarity between the name of the entity mention and the name of the entity candidate. The candidate entities are sorted on Soren Dice coefficient and Elastic Search score and the first candidate entity is picked.
 
--- TODO: Thijmen add the last link step, which one is selected?
+### Unlinkable Mention Prediction
+When the entities are retrieved from Elastic Search, a threshold is used (Elastic Search score >= 6). An entity mention is dropped and considered unlinkable when no candidate entities are found, this is either because there were no entity candidates found in Freebase or no entity candidate met the Elastic Search score threshold.
 
-## Step3: Output
-After extracting the entities and linking them to found entities in the Knowledge Base through Elastic Search, the output is generated and written to the output_file.
+## Step 3: Output
+The results of the knowledge acquisition pipeline can be found in the `OUTPUT_FILE`.
 
-The output follows the following format: '<WARC_ID>...<NLP_MENTION>...<FREEBASE_ID>'
-Where the WARC_ID is the crawled web page ID as provided in the Web ARChive.
-Where the NLP_MENTION is the actual found named entity by Spacy.
-And where the FREEBASE_ID is the ID as found during the linking phase in the Freebase knowledge base.
+The output follows the following format: `<WARC_ID>\t<NLP_MENTION>\t<FREEBASE_ID>\n`
+* Where the `WARC_ID` is the crawled web page ID as provided in the WARC.
+* Where the `NLP_MENTION` is the entity mention found by Spacy.
+* Where the `FREEBASE_ID` is the ID as found during the linking phase in the Freebase knowledge base.
+
+# Results
+The F1 score when executing the project on the sample archive provided by the course equals to: `0.23906`.

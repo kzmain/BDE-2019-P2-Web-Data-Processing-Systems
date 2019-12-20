@@ -20,6 +20,8 @@ TRIDENT_HOST = "localhost:9090"
 WARC_ARCHIVE = "../data/sample.warc.gz"
 OUTPUT_FILE = 'results.tsv'
 
+CALC_SCORE = os.getenv('CALC_SCORE', False)
+
 argv_count = len(sys.argv)
 if argv_count == 1:
     print("working with default arguments, run with '--help' to view possible arguments...")
@@ -56,4 +58,5 @@ with open(OUTPUT_FILE, 'w') as f:
     for _, row in df.iterrows():
         f.write('%s\t%s\t%s\n' % (row[Columns.WARC_ID], row[Columns.NLP_MENTION], row[Columns.FREEBASE_ID]))
 
-os.system('python ../score.py ../data/sample.annotations.tsv %s' % OUTPUT_FILE)
+if CALC_SCORE:
+    os.system('python ../score.py ../data/sample.annotations.tsv %s' % OUTPUT_FILE)
