@@ -90,7 +90,7 @@ link_df = Linker.link(ES_HOST, TRIDENT_HOST, nlp_df) #type: DataFrame
 
 if not LOCAL:
     # Transform to Panda DataFrame and write output to the output file.
-    df = link_df.write.csv(OUTPUT_FILE, mode="overwrite", header=True)
+    df = link_df.coalesce(1).write.csv(OUTPUT_FILE, mode="overwrite", header=True)
 else:
     df = link_df.toPandas()
     with open(OUTPUT_FILE, 'w') as f:
