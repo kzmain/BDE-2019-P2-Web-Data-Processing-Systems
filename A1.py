@@ -21,7 +21,7 @@ from System import Columns
 
 #java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
 #os.environ['JAVA_HOME'] = java8_location
-os.environ['PYSPARK_PYTHON'] = 'venv/bin/python'
+# os.environ['PYSPARK_PYTHON'] = 'venv/bin/python'
 
 ###     =========================
 ###     |   Declare constants   |
@@ -89,20 +89,15 @@ text_df = TextExtractor.extract(warc_df).cache()
 nlp_df = SpacyNLP.extract(text_df).cache()
 link_df = Linker.link(ES_HOST, TRIDENT_HOST, nlp_df) #type: DataFrame
 
+out_file = OUTPUT_FILE if not LOCAL else OUTPUT_FILE + ".tmp"
 
-tmp_out_file = OUTPUT_FILE+".tmp"
-link_df.write.csv(tmp_out_file, mode="overwrite", sep="\t", header=False)
+link_df.write.csv(out_file, mode="overwrite", sep="\t", header=False)
 
 print("concatinating...")
 if LOCAL:
-    os.system('cat %s/* > %s'%(tmp_out_file, OUTPUT_FILE))
-else:
-    tmp_file = 'tmp.tsv'
+    os.system('cat %s/* > %s'%(out_file, OUTPUT_FILE))
 
-    os.system('hadoop fs -getmerge %s/*.csv %s'%(tmp_out_file, tmp_file))
-    os.system('hadoop fs -put -f %s %s'%(tmp_file, OUTPUT_FILE))
+    if CALC_SCORE:
+        os.system('python score.py data/sample.annotations.tsv %s' % (OUTPUT_FILE))
 
 print("out_file: %s"%OUTPUT_FILE)
-
-if CALC_SCORE:
-    os.system('python score.py data/sample.annotations.tsv %s' % (OUTPUT_FILE))
