@@ -46,13 +46,10 @@ app = create_spark_app()
 sc = app.sparkContext
 
 warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE, 'raw.csv')
-text_df = TextExtractor.extract(warc_df, 'text.csv')
-# text_df = app.createDataFrame(text_df.collect())
+text_df = TextExtractor.extract(warc_df, 'text.csv').cache()
 
-nlp_df = SpacyNLP.extract(text_df, 'nlp.csv')
-# nlp_df = app.createDataFrame(nlp_df.collect())
+nlp_df = SpacyNLP.extract(text_df, 'nlp.csv').cache()
 link_df = Linker.link(ES_HOST, TRIDENT_HOST, app, nlp_df, 'linked.csv')
-# link_df = app.createDataFrame(link_df.collect())
 
 df = link_df.toPandas()
 with open(OUTPUT_FILE, 'w') as f:

@@ -95,7 +95,7 @@ class SpacyNLP:
 
     @staticmethod
     def __generate_entities(key, payload):
-        print("SpacyNLP: %s" % key)
+        # print("SpacyNLP: %s" % key)
         entries = []
         ent_set = set()
         nlp = SpacyNLP.nlp(payload)

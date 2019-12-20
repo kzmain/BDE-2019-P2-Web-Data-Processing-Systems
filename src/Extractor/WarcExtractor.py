@@ -46,7 +46,7 @@ class WarcExtractor:
 
                 if len(payload) >= WarcExtractor.SIZE_THRESHOLD: 
                     host = urlparse(uri).netloc
-                    print('WarcExtractor: ', key, host)
+                    # print('WarcExtractor: ', key, host)
 
                     return key, host, payload
         return None

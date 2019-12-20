@@ -46,7 +46,7 @@ class TextExtractor:
         lines = list(map(lambda x: re.sub(r'[^\x1F-\x7F]+', '', x), lines))
         lines = list(filter(lambda x: x.strip() != "" and any(map(lambda sign: sign in x, TextExtractor.SETENCE_SIGNS)) and x.strip().lower() != host.lower(), lines))
 
-        print('TextExtractor: ', key, host)
+        # print('TextExtractor: ', key, host)
 
         sentences = []
         for line in lines:
