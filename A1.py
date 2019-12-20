@@ -40,16 +40,16 @@ CALC_SCORE = os.getenv('CALC_SCORE', False)
 ###     =========================
 
 
-argv_count = len(sys.argv)
-if argv_count == 1:
-    print("working with default arguments, run with '--help' to view possible arguments...")
-elif argv_count == 2 and sys.argv[1] == "--help":
-    print("usage: python3 %s WARC_ARCHIVE OUTPUT_FILE ES_HOST" % __file__)
-    sys.exit(0)
-elif argv_count == 4:
-    WARC_ARCHIVE = sys.argv[1]
-    OUTPUT_FILE = sys.argv[2]
-    ES_HOST = sys.argv[3]
+# argv_count = len(sys.argv)
+# if argv_count == 1:
+#     print("working with default arguments, run with '--help' to view possible arguments...")
+# elif argv_count == 2 and sys.argv[1] == "--help":
+#     print("usage: python3 %s WARC_ARCHIVE OUTPUT_FILE ES_HOST" % __file__)
+#     sys.exit(0)
+# elif argv_count == 4:
+#     WARC_ARCHIVE = sys.argv[1]
+#     OUTPUT_FILE = sys.argv[2]
+#     ES_HOST = sys.argv[3]
 
 print("arguments: (WARC_ARCHIVE: '%s', OUTPUT_FILE: '%s', ES_HOST: '%s')"%(WARC_ARCHIVE, OUTPUT_FILE, ES_HOST))
 
