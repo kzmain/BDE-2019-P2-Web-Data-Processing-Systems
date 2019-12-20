@@ -4,7 +4,7 @@ This repository contains the Lab Assignment of the 2019 edition of the course We
 # Project Usage
 The project can be used in different environments, each supported environment is listed below with a description of the setup commands:
 * **Local machine**: (1) activate any virtual environment you want (2) run `./setup-env-local.sh`. Note: do not forget to activate your environment when running the project! 
-* **DAS4 Node***: run `./setup-env-das.sh`, and run `. activate-env-das.sh` before executing the project on a node (not required when executing in the cluster).
+* **DAS4 Node**: run `./setup-env-das.sh`, and run `. activate-env-das.sh` before executing the project on a node (not required when executing in the cluster).
 * **DAS4 Spark Cluster**: run `./setup-env-das.sh`.
 
 To run the project either **locally or on a DAS4 node**, run the command: `LOCAL=TRUE python3 A1.py WARC_ARCHIVE OUTPUT_FILE ES_HOST`.
