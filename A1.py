@@ -63,6 +63,7 @@ def create_spark_app() -> SparkSession:
     return SparkSession \
         .builder \
         .appName("A1") \
+        .master("yarn") \
         .getOrCreate()
 
 # Initialise spark
