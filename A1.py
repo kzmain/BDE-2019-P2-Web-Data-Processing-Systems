@@ -37,6 +37,7 @@ CALC_SCORE = os.getenv('CALC_SCORE', False)
 ###     |    CLI Declaration    |
 ###     =========================
 
+
 argv_count = len(sys.argv)
 if argv_count == 1:
     print("working with default arguments, run with '--help' to view possible arguments...")
@@ -60,6 +61,7 @@ def create_spark_app() -> SparkSession:
     return SparkSession \
         .builder \
         .appName("A1") \
+        .master("yarn")
         .getOrCreate()
 
 # Initialise spark
