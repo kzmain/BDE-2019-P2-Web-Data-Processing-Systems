@@ -2,6 +2,7 @@ import os
 import sys
 
 from pyspark.sql.session import SparkSession
+from pyspark import SparkContext
 
 from Extractor.TextExtractor import TextExtractor
 from Extractor.WarcExtractor import WarcExtractor
@@ -66,7 +67,8 @@ def create_spark_app() -> SparkSession:
 
 # Initialise spark
 app = create_spark_app()
-sc = app.sparkContext
+sc = app.sparkContext # type: SparkContext
+sc.setLogLevel("ALL")
 
 # Extract information from WARC file and parse HTML with TextExtractor (returns string of sentences per webpage)
 warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE)
