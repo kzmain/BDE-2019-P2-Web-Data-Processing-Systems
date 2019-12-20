@@ -88,14 +88,20 @@ text_df = TextExtractor.extract(warc_df).cache()
 nlp_df = SpacyNLP.extract(text_df).cache()
 link_df = Linker.link(ES_HOST, TRIDENT_HOST, nlp_df) #type: DataFrame
 
-if not LOCAL:
-    # Transform to Panda DataFrame and write output to the output file.
-    df = link_df.coalesce(1).write.csv(OUTPUT_FILE, mode="overwrite", header=True)
-else:
-    df = link_df.toPandas()
-    with open(OUTPUT_FILE, 'w') as f:
-        for _, row in df.iterrows():
-            f.write('%s\t%s\t%s\n' % (row[Columns.WARC_ID], row[Columns.NLP_MENTION], row[Columns.FREEBASE_ID]))
+
+tmp_out_file = OUTPUT_FILE+".tmp"
+link_df.write.csv(tmp_out_file, mode="overwrite", sep="\t", header=False)
+
+print("concatinating...")
+if LOCAL:
+    os.system('cat %s/* > %s'%(tmp_out_file, OUTPUT_FILE))
 
     if CALC_SCORE:
-        os.system('python score.py data/sample.annotations.tsv %s' % OUTPUT_FILE)
+        os.system('python score.py data/sample.annotations.tsv %s' % (OUTPUT_FILE))
+else:
+    tmp_file = 'tmp.tsv'
+
+    os.system('hadoop fs -getmerge %s/*.csv %s'%(tmp_out_file, tmp_file))
+    os.system('hadoop fs -moveFromLocal %s %s'%(tmp_file, OUTPUT_FILE))
+
+print("out_file: %s"%OUTPUT_FILE)
