@@ -10,6 +10,7 @@ import csv
 import pyspark
 from pyspark.sql.functions import udf, lit, explode, max, min,col
 from pyspark.sql.types import StringType, ArrayType
+from pyspark.sql import DataFrame
 
 from System import Columns, Location
 from Tools import Reader
@@ -23,14 +24,7 @@ import spacy
 
 class Linker:
     THRESHOLD_SCORE = 6
-    THRESHOLD_SCORE_H = 0.65
-    df_columns = [Columns.LINKER_ENTITY,
-                  Columns.LINKER_SCORE,
-                  Columns.LINKER_H_SCORE,
-                  Columns.LINKER_LABEL,
-                  Columns.LINKER_FB_ID]
-
-    NO_FREEBASE_LIST = []
+    THRESHOLD_SCORE_DICE = 0.65
 
     nlp = spacy.load("en_core_web_sm")
 
@@ -65,97 +59,37 @@ class Linker:
                 raise e
 
     @staticmethod
-    def query(elastic_domain, trident_domain, query):
-        conn = http.client.HTTPConnection(elastic_domain.split(':')[0], int(elastic_domain.split(':')[1]))
-        conn.request('GET', '/freebase/label/_search?%s' % urllib.parse.urlencode({'q': query, 'size': 1000}))
+    def query(domain, key, text):
+        conn = http.client.HTTPConnection(domain.split(':')[0], int(domain.split(':')[1]))
+        conn.request('GET', '/freebase/label/_search?%s'%urllib.parse.urlencode({'q': text, 'size': 1000}))
         response = conn.getresponse()
-
+        
         results = []
         if response.status == 200:
+            print("Linker: ", key, text)
             response = json.loads(response.read())
             for hit in response.get('hits', {}).get('hits', []):
                 freebase_label = hit.get('_source', {}).get('label')
                 freebase_id = hit.get('_source', {}).get('resource')
                 freebase_score = hit.get('_score', 0)
-
+                
                 if freebase_score < Linker.THRESHOLD_SCORE: continue
-                dice_score = Linker.__sorensen_dice(query, freebase_label)
-                # if dice_score > Linker.THRESHOLD_SCORE_H: continue
-
-                results.append([query, freebase_score, dice_score, freebase_label, freebase_id])
+                results.append([freebase_score, Linker.__sorensen_dice(text, freebase_label), freebase_label, freebase_id])
+            
             if len(results) > 0:
-                results.sort(key=lambda x: (x[2], -x[1]))
-                df = pd.DataFrame(results, columns=Linker.df_columns)
-                if not os.path.exists(Location.FREEBASE_PATH_PAR):
-                    os.mkdir(Location.FREEBASE_PATH_PAR)
-                df.to_parquet(Location.FREEBASE_PATH_PAR + "/" + str(uuid.uuid4()) + ".parquet")
-                # results = list(map(lambda x: x[4], results[0:min(len(results), Linker.SELECT_COUNT)]))
-            else:
-                if query not in Linker.NO_FREEBASE_LIST:
-                    Writer.write_list(Location.FREEBASE_PATH_EMP_TXT, [query], "a+")
-        elif response.status == 400:
-            if query not in Linker.NO_FREEBASE_LIST:
-                Writer.write_list(Location.FREEBASE_PATH_EMP_TXT, [query], "a+")
-        return results
+                results.sort(key=lambda x: (x[1], -x[0]))
+
+                return results[0][3]
+
+        return ""
 
     @staticmethod
-    def link(elastic_domain, trident_domain, spark, nlp_df, out_file=""):
-        test_df = nlp_df.toPandas()
-        # Get distinction mentions list from nlp
-        mention_list = nlp_df.select(Columns.NLP_MENTION).distinct().toPandas()[Columns.NLP_MENTION]
-        mention_list = list(mention_list)
-        # mention_list = list(set(Reader.read_txt_to_list("listfile.txt")))
-        # Get distinction entities list from stored freebase related info
-        try:
-            os.makedirs(Location.FREEBASE_PATH_PAR, exist_ok=True)
-
-            freebase_df = spark.read.parquet(Location.FREEBASE_PATH_PAR + "/*.parquet")
-            freebase_list = freebase_df.select(Columns.LINKER_ENTITY).distinct().toPandas()[Columns.LINKER_ENTITY]
-            freebase_list = list(set(freebase_list))
-        except pyspark.sql.utils.AnalysisException:
-            freebase_list = []
-        # Get mentions those does not have entities in freebase
-        no_entity_list = Reader.read_txt_to_list(Location.FREEBASE_PATH_EMP_TXT)
-        Linker.NO_FREEBASE_LIST = no_entity_list
-        # Get target list
-        target_list = [item for item in mention_list if item not in freebase_list]
-        target_list = [item for item in target_list if item not in no_entity_list]
-
-        print("[System]: %s distinct mentions from user." % len(mention_list))
-        print("[System]: %s distinct entities from stored parquet." % (len(freebase_list) + len(no_entity_list)))
-        print("[System]: %s distinct not processed entities from user." % len(target_list))
-
-        mention_df = spark.createDataFrame(target_list, "string").toDF(Columns.NLP_MENTION)
-        sum_cols = udf(Linker.query, ArrayType(StringType()))
-        mention_df = mention_df.withColumn(Columns.LINKER_ENTITY, sum_cols(lit(elastic_domain),lit(trident_domain), Columns.NLP_MENTION))
-        mention_df.collect()
-
-        freebase_df = spark.read.parquet(Location.FREEBASE_PATH_PAR + "/*.parquet")
-        ##+--------------------+--------------------+--------------------+-----------------+--------------+----------+----------------+--------+---------+------------------+---------------+----------+
-        # |                 key|                host|             payload|           labels|           pos|       tag|             dep| entites|    score|      hamming_core|          label|     fb_id|
-        # +--------------------+--------------------+--------------------+-----------------+--------------+----------+----------------+--------+---------+------------------+---------------+----------+
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac| 7.022306|               0.0|       FLIP4MAC| /m/0bf90p|
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.8787365|               0.0|       flip4Mac| /m/0bf90p|
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.8787365|               0.0|       Flip4mac| /m/0bf90p|
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.7670817|               0.0|       Flip4mac| /m/0bf90p|
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.8787365|0.6666666666666666|   Flip4Mac WMV| /m/0bf90p|
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.7670817|0.6666666666666666|   Flip4Mac WMV| /m/0bf90p|
-        # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac| 7.022306|               1.0|       Flip4Mac| /m/0bf90p|
-        nlp_df = nlp_df.join(freebase_df, nlp_df.mention == freebase_df.entites, how='full')
-        nlp_df = nlp_df.filter(nlp_df.entites.isNotNull())
-        score_df = nlp_df.groupBy(col(Columns.NLP_MENTION).alias("n_mention")).agg(min(Columns.LINKER_H_SCORE).alias("h_max"))
-        nlp_df = nlp_df.join(score_df, (nlp_df.mention == score_df.n_mention), how='full')
-        nlp_df = nlp_df.withColumn("h_checker", col("hamming_core") == col("h_max"))
-        nlp_df = nlp_df.filter(col("h_checker"))
-
-        score_df = nlp_df.groupBy(col(Columns.NLP_MENTION).alias("x_mention")).agg(min(Columns.LINKER_SCORE).alias("s_max"))
-        nlp_df = nlp_df.join(score_df, (nlp_df.mention == score_df.x_mention), how='full')
-        nlp_df = nlp_df.withColumn("s_checker", col("score") == col("s_max"))
-        nlp_df = nlp_df.filter(col("s_checker"))
-
-        nlp_df = nlp_df.select([col(Columns.WARC_ID),
-                                col(Columns.NLP_MENTION),
-                                col(Columns.LINKER_FB_ID).alias(Columns.FREEBASE_ID)])
-        nlp_df = nlp_df.dropDuplicates([Columns.WARC_ID, Columns.NLP_MENTION])
+    def link(es_domain, trident_domain, nlp_df: DataFrame, out_file=""):
+        sum_cols = udf(Linker.query, StringType())
+        nlp_df = nlp_df.withColumn(Columns.FREEBASE_ID, sum_cols(lit(es_domain), Columns.WARC_ID, Columns.NLP_MENTION))
+        nlp_df = nlp_df.where((col(Columns.FREEBASE_ID) != ""))
+       
+        if out_file != "":
+            Writer.csv_writer(out_file, nlp_df)
 
         return nlp_df
