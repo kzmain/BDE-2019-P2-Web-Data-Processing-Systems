@@ -23,6 +23,8 @@ test -n "$SPARK_HOME"
 source venv/bin/activate
 pip install -U pip
 pip install -r requirements.pip
+
+python3 -m spacy download en_core_web_sm
 deactivate
 
 # Here we package up an isolated environment that we'll ship to YARN.

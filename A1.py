@@ -1,6 +1,8 @@
 import os
 import sys
 
+sys.path.insert(1, 'src')
+
 from pyspark.sql.session import SparkSession
 
 from Extractor.TextExtractor import TextExtractor
