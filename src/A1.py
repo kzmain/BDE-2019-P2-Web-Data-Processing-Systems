@@ -9,16 +9,32 @@ from Linking.Linker import Linker
 from NLP.SpacyNLP import SpacyNLP
 from System import Columns
 
+###     =========================================================================================
+###     |                                                                                       |
+###     |   This is the main program file, the pipeline starts and ends here.                   |
+###     |       This file is responsible for the parallelisation offered by Spark (PySpark).    |
+###     |       It offers easy configurability by declaring used variables centrally.           |
+###     |                                                                                       |
+###     =========================================================================================
+
 #java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
 #os.environ['JAVA_HOME'] = java8_location
 
-# crashes on cache if this is not enabled (thijmen)
+# Program crashes on cache if this is not enabled
 os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+
+###     =========================
+###     |   Declare constants   |
+###     =========================
 
 ES_HOST = "localhost:9200"
 TRIDENT_HOST = "localhost:9090"
 WARC_ARCHIVE = "../data/sample.warc.gz"
 OUTPUT_FILE = 'results.tsv'
+
+###     =========================
+###     |    CLI Declaration    |
+###     =========================
 
 argv_count = len(sys.argv)
 if argv_count == 1:
@@ -36,21 +52,28 @@ print("arguments: (WARC_ARCHIVE: '%s', OUTPUT_FILE: '%s', ES_HOST: '%s')"%(WARC_
 print("running spark...")
 print("="*40)
 
+###     ==============================
+###     |    Spark Initialisation    |
+###     ==============================
 def create_spark_app() -> SparkSession:
     return SparkSession \
         .builder \
         .appName("A1") \
         .getOrCreate()
 
+# Initialise spark
 app = create_spark_app()
 sc = app.sparkContext
 
+# Extract information from WARC file and parse HTML with TextExtractor (returns string of sentences per webpage)
 warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE, 'raw.csv')
 text_df = TextExtractor.extract(warc_df, 'text.csv').cache()
 
+# Perform NLP Preprocessing on the extracted text, link to found entities in the Knowledge Base
 nlp_df = SpacyNLP.extract(text_df, 'nlp.csv').cache()
 link_df = Linker.link(ES_HOST, TRIDENT_HOST, app, nlp_df, 'linked.csv')
 
+# Transofrm to Panda DataFrame and write output to the output file.
 df = link_df.toPandas()
 with open(OUTPUT_FILE, 'w') as f:
     for _, row in df.iterrows():

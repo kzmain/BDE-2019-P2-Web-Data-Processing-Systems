@@ -20,10 +20,29 @@ import json
 import textdistance
 import spacy
 
+###     ============================================================================
+###     |                                                                          |
+###     |   This is the Linker class                                               |
+###     |       It is responsible for generating candidate entities as found       |
+###     |       by the Elastic Search server by querying for each Named Entity     |
+###     |       as found by the NLP Preprocessing task. It ranks the candidates    |
+###     |       and selects the most probable link (highest rank) and finalises.   |
+###     |                                                                          |
+###     ============================================================================
 
 class Linker:
+###     =========================
+###     |   Declare constants   |
+###     =========================
+
+    # Theshold on freebase_score as provided by the  
+    # FreeBase instance behind the Elastic Search server.
     THRESHOLD_SCORE = 6
+
+    # Threshold on the dice score (unused as it currently stands)
     THRESHOLD_SCORE_H = 0.65
+
+    # Format for the DataFrame that is to be considered as output
     df_columns = [Columns.LINKER_ENTITY,
                   Columns.LINKER_SCORE,
                   Columns.LINKER_H_SCORE,
@@ -32,17 +51,24 @@ class Linker:
 
     NO_FREEBASE_LIST = []
 
+    # Load the small (web_sm) Spacy package for the English language
+    # Instead of the large (web_lg) as it gave a non-significant 
+    # improvement but increased execution time significantly
     nlp = spacy.load("en_core_web_sm")
 
+    # Tokenize each sentence into words
     @staticmethod
     def __tokenize(a):
         for word in Linker.nlp(a):
             yield word.text
 
+    # Calculate the Sorensen Dice Score for two entities.
     @staticmethod
     def __sorensen_dice(a, b):
         return textdistance.sorensen_dice(Linker.__tokenize(a), Linker.__tokenize(b))
 
+    # UNUSED AS IT CURRENTLY STANDS (gave no significant improvement of F1-Score)
+    # Query the provided trident with SPARQL with the Named Entities found
     @staticmethod
     def sparql(domain, fb_id):
         # url = 'http://%s/sparql' % domain
@@ -64,6 +90,12 @@ class Linker:
                 print(e)
                 raise e
 
+    #   Query the Elastic Search server instance with the found Named Entities
+    #       - Retrieve the Candidate Entities   (Candidate Entity Generation)
+    #       - Rank the Candidate Entities       (Candidate Entity Ranking)      >> Automatically done (freebase_score)
+    #           - Remove unlinkable Entities    (Unlinkable Mention Prediction)
+    #       
+    #       -- Return a list of Named Entities with their probable links (Candidate Entities)
     @staticmethod
     def query(elastic_domain, trident_domain, query):
         conn = http.client.HTTPConnection(elastic_domain.split(':')[0], int(elastic_domain.split(':')[1]))
@@ -98,25 +130,32 @@ class Linker:
                 Writer.write_list(Location.FREEBASE_PATH_EMP_TXT, [query], "a+")
         return results
 
+    #   Link all Named Entities to their correct Candidate Entities
+    #       - Select the highest rank Candidate Entity as the correct link
+    #       
+    #       -- Return a DataFrame containing all LINKED Named Entities
     @staticmethod
     def link(elastic_domain, trident_domain, spark, nlp_df, out_file=""):
         test_df = nlp_df.toPandas()
+
         # Get distinction mentions list from nlp
         mention_list = nlp_df.select(Columns.NLP_MENTION).distinct().toPandas()[Columns.NLP_MENTION]
         mention_list = list(mention_list)
         # mention_list = list(set(Reader.read_txt_to_list("listfile.txt")))
+
         # Get distinction entities list from stored freebase related info
         try:
             os.makedirs(Location.FREEBASE_PATH_PAR, exist_ok=True)
-
             freebase_df = spark.read.parquet(Location.FREEBASE_PATH_PAR + "/*.parquet")
             freebase_list = freebase_df.select(Columns.LINKER_ENTITY).distinct().toPandas()[Columns.LINKER_ENTITY]
             freebase_list = list(set(freebase_list))
         except pyspark.sql.utils.AnalysisException:
             freebase_list = []
+
         # Get mentions those does not have entities in freebase
         no_entity_list = Reader.read_txt_to_list(Location.FREEBASE_PATH_EMP_TXT)
         Linker.NO_FREEBASE_LIST = no_entity_list
+
         # Get target list
         target_list = [item for item in mention_list if item not in freebase_list]
         target_list = [item for item in target_list if item not in no_entity_list]
@@ -127,7 +166,17 @@ class Linker:
 
         mention_df = spark.createDataFrame(target_list, "string").toDF(Columns.NLP_MENTION)
         sum_cols = udf(Linker.query, ArrayType(StringType()))
-        mention_df = mention_df.withColumn(Columns.LINKER_ENTITY, sum_cols(lit(elastic_domain),lit(trident_domain), Columns.NLP_MENTION))
+        
+        mention_df = mention_df
+                        .withColumn(
+                            Columns.LINKER_ENTITY, 
+                            sum_cols(
+                                lit(elastic_domain),
+                                lit(trident_domain), 
+                                Columns.NLP_MENTION
+                            )
+                        )
+
         mention_df.collect()
 
         freebase_df = spark.read.parquet(Location.FREEBASE_PATH_PAR + "/*.parquet")
@@ -141,9 +190,12 @@ class Linker:
         # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.8787365|0.6666666666666666|   Flip4Mac WMV| /m/0bf90p|
         # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac|6.7670817|0.6666666666666666|   Flip4Mac WMV| /m/0bf90p|
         # |clueweb12-0000tw-...|centralalbertatv.net|MAC users may nee...|         Flip4Mac|       [PROPN]|     [NNP]|          [oprd]|Flip4Mac| 7.022306|               1.0|       Flip4Mac| /m/0bf90p|
+        
         nlp_df = nlp_df.join(freebase_df, nlp_df.mention == freebase_df.entites, how='full')
         nlp_df = nlp_df.filter(nlp_df.entites.isNotNull())
+
         score_df = nlp_df.groupBy(col(Columns.NLP_MENTION).alias("n_mention")).agg(min(Columns.LINKER_H_SCORE).alias("h_max"))
+        
         nlp_df = nlp_df.join(score_df, (nlp_df.mention == score_df.n_mention), how='full')
         nlp_df = nlp_df.withColumn("h_checker", col("hamming_core") == col("h_max"))
         nlp_df = nlp_df.filter(col("h_checker"))
@@ -156,6 +208,7 @@ class Linker:
         nlp_df = nlp_df.select([col(Columns.WARC_ID),
                                 col(Columns.NLP_MENTION),
                                 col(Columns.LINKER_FB_ID).alias(Columns.FREEBASE_ID)])
+        
         nlp_df = nlp_df.dropDuplicates([Columns.WARC_ID, Columns.NLP_MENTION])
 
         return nlp_df

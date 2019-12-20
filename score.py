@@ -1,5 +1,13 @@
 import sys
 
+###     ==================================================================
+###     |                                                                |
+###     |   This file is responsible for easily calculating the scores   |
+###     |       of the retrieved output from the NER process             |
+###     |                                                                |
+###     ==================================================================
+
+
 gold_file = sys.argv[1]
 pred_file = sys.argv[2]
 

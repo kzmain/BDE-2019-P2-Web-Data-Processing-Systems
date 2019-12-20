@@ -1,3 +1,9 @@
+###     =====================================================================
+###     |                                                                   |
+###     |   This file specifies the correct Columns for use in DataFrames   |
+###     |                                                                   |
+###     =====================================================================
+
 WARC_ID = "key"
 WARC_URL = "host"
 WARC_CONTENT = "payload"

@@ -1,6 +1,13 @@
 import glob
 import pandas as pd
 
+###     ================================================================
+###     |                                                              |
+###     |   This file specifies the generalised functions              |
+###     |       for reading Spark Parquet files to Pandas DataFrames   |
+###     |       and reading text to a specific list instance for use   |
+###     |                                                              |
+###     ================================================================
 
 def read_parquet_to_pandas(folder_uri, columns):
     file_list = glob.glob(folder_uri + '/*.parquet')
