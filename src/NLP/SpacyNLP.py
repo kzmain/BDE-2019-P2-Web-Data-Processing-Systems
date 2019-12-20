@@ -61,7 +61,7 @@ class SpacyNLP:
                 and (ent[0].isalpha() or ent[0].isnumeric()) \
                 and not validators.domain(ent.lower()) \
                 and "  " not in ent \
-                and ratio < 0.1:
+                and ratio < 0.1
 
     @staticmethod
     def __pack_entity(ent, token_dict):

@@ -76,8 +76,7 @@ class Linker:
                 results.append([freebase_score, Linker.__sorensen_dice(text, freebase_label), freebase_label, freebase_id])
             
             if len(results) > 0:
-                results.sort(key=lambda x: (x[1], -x[0]))
-
+                results.sort(key=lambda x: (x[1], x[0]))
                 return results[0][3]
 
         return ""
