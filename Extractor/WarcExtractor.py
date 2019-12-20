@@ -21,7 +21,7 @@ import os
 ###     ==========================================================================
 
 class WarcExtractor:
-    SAMPLE_SIZE = int(os.getenv('SAMPLE_SIZE', 92))
+    SAMPLE_SIZE = int(os.getenv('SAMPLE_SIZE', 0))
 
     SIZE_THRESHOLD = 100
 
