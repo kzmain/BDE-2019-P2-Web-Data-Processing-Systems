@@ -21,6 +21,7 @@ from System import Columns
 
 #java8_location = '/Library/Java/JavaVirtualMachines/liberica-jdk-1.8.0_202/Contents/Home'  # Set your own
 #os.environ['JAVA_HOME'] = java8_location
+os.environ['PYSPARK_PYTHON'] = 'venv/bin/python'
 
 ###     =========================
 ###     |   Declare constants   |
