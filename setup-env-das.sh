@@ -15,3 +15,9 @@ export PYSPARK_PYTHON="venv/bin/python"
 source venv/bin/activate
 sh setup-env-local.sh
 deactivate
+
+pushd venv/
+zip -rq ../venv.zip *
+popd
+
+zip -rq src.zip Extractor/ Linking/ NLP/ System/ Tools/
