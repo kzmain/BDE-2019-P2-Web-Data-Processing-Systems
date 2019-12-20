@@ -50,21 +50,7 @@ class SpacyNLP:
 
             m += 1
         return has_alpha, m / n # Return if text has alphabetical text and ratio as tuple
-
-
-    # @staticmethod
-    # def __generate_entities(key, host, payload):
-    #     print("SpacyNLP: %s"%key)
-
-    #     entries = []
-    #     for ent in SpacyNLP.nlp(str(payload)).ents:
-    #         if ent.label_ in SpacyNLP.INTERESTED_LABELS:
-    #             text = str(ent)
-    #             has_alpha, ratio = SpacyNLP.__special_ratio(text)
-    #             if has_alpha and (text[0].isalpha() or text[0].isnumeric()) and not validators.domain(text.lower()) and "  " not in text and ratio < 0.1:
-    #                 if text not in entries: entries.append(text)
-    #     return entries
-
+   
     # Return token dictionary for the current NLP 
     # with the payload selected for that NLP instance
     @staticmethod
@@ -116,7 +102,7 @@ class SpacyNLP:
     #    # Filter on only 'interesting' Spacy NLP Entity tags
     @staticmethod
     def __generate_entities(key, payload):
-        # print("SpacyNLP: %s" % key)
+        print("SpacyNLP: %s" % key)
         entries = []
         ent_set = set()
         nlp = SpacyNLP.nlp(payload)
@@ -144,10 +130,8 @@ class SpacyNLP:
         text_df = text_df.drop(col(Col.NLP_NLP))
         text_df = text_df.drop(col(Col.NLP_SIZE))        
         
-        # NOTE: Readded this to check F score without new Linker implementation (otherwise no duplicate filtering occured)
-        # text_df = text_df.dropDuplicates([Col.WARC_ID, Col.NLP_MENTION])
+        text_df = text_df.dropDuplicates([Col.WARC_ID, Col.NLP_MENTION])
 
         if out_file != "":
             Writer.csv_writer(out_file, text_df)
         return text_df
-

@@ -66,12 +66,12 @@ app = create_spark_app()
 sc = app.sparkContext
 
 # Extract information from WARC file and parse HTML with TextExtractor (returns string of sentences per webpage)
-warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE, 'raw.csv')
-text_df = TextExtractor.extract(warc_df, 'text.csv').cache()
+warc_df = WarcExtractor.extract(sc, WARC_ARCHIVE)
+text_df = TextExtractor.extract(warc_df).cache()
 
 # Perform NLP Preprocessing on the extracted text, link to found entities in the Knowledge Base
-nlp_df = SpacyNLP.extract(text_df, 'nlp.csv').cache()
-link_df = Linker.link(ES_HOST, TRIDENT_HOST, app, nlp_df, 'linked.csv')
+nlp_df = SpacyNLP.extract(text_df).cache()
+link_df = Linker.link(ES_HOST, TRIDENT_HOST, nlp_df)
 
 # Transofrm to Panda DataFrame and write output to the output file.
 df = link_df.toPandas()

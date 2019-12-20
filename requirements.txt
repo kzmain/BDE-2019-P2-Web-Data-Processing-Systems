@@ -11,5 +11,3 @@ pyspark
 xlsxwriter
 beautifulsoup4
 html5lib
-fastparquet
-python-snappy
