@@ -1,6 +1,7 @@
 import os
 import sys
 
+from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
 from pyspark import SparkContext
 
@@ -30,13 +31,13 @@ LOCAL = os.getenv("LOCAL", False)
 if not LOCAL:
     ES_HOST = "node001:9200"
     TRIDENT_HOST = "node001:9090"
-    WARC_ARCHIVE = "hdfs:///user/bbkruit/sample.warc.gz"
+    WARC_ARCHIVE = "hdfs:/user/bbkruit/sample.warc.gz"
+    OUTPUT_FILE = "hdfs:/user/wdps1901/results.tsv"
 else:
     ES_HOST = "localhost:9200"
     TRIDENT_HOST = "localhost:9090"
     WARC_ARCHIVE = "data/sample.warc.gz"
-
-OUTPUT_FILE = 'results.tsv'
+    OUTPUT_FILE = 'results.csv'
 
 CALC_SCORE = os.getenv('CALC_SCORE', False)
 
@@ -85,13 +86,14 @@ text_df = TextExtractor.extract(warc_df).cache()
 
 # Perform NLP Preprocessing on the extracted text, link to found entities in the Knowledge Base
 nlp_df = SpacyNLP.extract(text_df).cache()
-link_df = Linker.link(ES_HOST, TRIDENT_HOST, nlp_df)
+link_df = Linker.link(ES_HOST, TRIDENT_HOST, nlp_df) #type: DataFrame
 
 # Transform to Panda DataFrame and write output to the output file.
-df = link_df.toPandas()
-with open(OUTPUT_FILE, 'w') as f:
-    for _, row in df.iterrows():
-        f.write('%s\t%s\t%s\n' % (row[Columns.WARC_ID], row[Columns.NLP_MENTION], row[Columns.FREEBASE_ID]))
+df = link_df.write.csv(OUTPUT_FILE, mode="overwrite", header=True)
 
-if CALC_SCORE:
+# with open(OUTPUT_FILE, 'w') as f:
+#     for row in df:
+#         f.write('%s\t%s\t%s\n' % (row[Columns.WARC_ID], row[Columns.NLP_MENTION], row[Columns.FREEBASE_ID]))
+
+if LOCAL and CALC_SCORE:
     os.system('python score.py data/sample.annotations.tsv %s' % OUTPUT_FILE)

@@ -113,9 +113,9 @@ class Linker:
     def link(es_domain, trident_domain, nlp_df: DataFrame, out_file=""):
         sum_cols = udf(Linker.query, StringType())
         nlp_df = nlp_df.withColumn(Columns.FREEBASE_ID, sum_cols(lit(es_domain), Columns.WARC_ID, Columns.NLP_MENTION))
-        nlp_df = nlp_df.where((col(Columns.FREEBASE_ID) != ""))
+        nlp_df = nlp_df.where((col(Columns.FREEBASE_ID) != "")) #type: DataFrame
        
         if out_file != "":
             Writer.csv_writer(out_file, nlp_df)
 
-        return nlp_df
+        return nlp_df.select([Columns.WARC_ID, Columns.NLP_MENTION, Columns.FREEBASE_ID])
